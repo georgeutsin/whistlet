@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "User",
+  "description": "User profile",
+  "type": "object",
+  "properties": {
+    "id": {
+      "description": "positive integer or string of digits",
+      "type": ["string", "integer"],
+      "pattern": "^[1-9][0-9]*$"
+    },
+    "username": {
+      "description": "letters or numbers, max length is 32 chars",
+      "type": "string",
+      "maxLength": 32,
+      "minLength": 1,
+      "pattern": "^[a-zA-Z0-9]+$"
+    },
+    "name": {
+      "description": "max length is 32 chars",
+      "type": "string",
+      "maxLength": 32
+    },
+    "email": {
+      "description": "valid email, max length is 128 chars",
+      "type": "string",
+      "format": "email",
+      "maxLength": 128,
+      "minLength": 1
+    },
+    "password": {
+      "description": "min length of 6 chars",
+      "type": "string",
+      "minLength": 6
+    }
+  }
+}
