@@ -292,6 +292,60 @@ function User () {
       });
     });
   };
+
+  this.following = function (params) {
+    return connection.acquire(function (con, resolve, reject) {
+      var values = [];
+      var query = `
+      SELECT following_id AS id, username, name, avatar_hash, order_date, did_follow, follows_you
+      FROM (
+        SELECT follows.followed_id AS following_id, created_at AS order_date
+        FROM follows
+        WHERE user_id = ?
+      ) AS F
+      LEFT JOIN users ON users.id = following_id `;
+      values.push(params.id);
+      if (params.cur_user_id) {
+        query += `
+        LEFT JOIN (
+          SELECT followed_id AS did_follow, followed_id
+          FROM follows
+          WHERE follows.user_id = ?
+        ) AS F2 ON F2.followed_id = following_id
+        LEFT JOIN (
+          SELECT user_id AS follows_you, user_id
+          FROM follows
+          WHERE follows.followed_id = ?
+        ) AS F3 ON F3.user_id = following_id `;
+        values.push(params.cur_user_id, params.cur_user_id);
+      } else {
+        query += `
+          INNER JOIN (SELECT 0 AS did_follow) AS DIDFOLLOW
+          INNER JOIN (SELECT 0 AS follows_you) AS FOLLOWSYOU `;
+      }
+      if (params.last_date) {
+        query += ' WHERE order_date < ? ';
+        values.push(params.last_date);
+      }
+      query += ' ORDER BY order_date DESC LIMIT 20;';
+      query = mysql.format(query, values);
+
+      con.query(query, function (err, result) {
+        con.release();
+        if (err) {
+          reject({'error': true, 'status': 400, 'details': [{'message': 'Error: ' + err.code}]});
+        } else {
+          result = result.map(function (row) {
+            row.follows_you = (row.follows_you && row.follows_you > 0) ? true : false;
+            row.did_follow = (row.did_follow && row.did_follow > 0) ? true : false;
+            return row;
+          });
+
+          resolve({'error': false, 'status': 200, 'users': result});
+        }
+      });
+    });
+  };
 }
 
 module.exports = new User();

@@ -259,6 +259,31 @@ module.exports = {
         res.status(reason.status);
         return res.json(reason);
       });
+  },
+
+  following: function (req, res) {
+    var params = _.pick(req.query, 'token', 'id', 'last_date');
+    var valid = validateSocial(params);
+    if (!valid) {
+      res.status(400);
+      return res.json({error: true, details: validateSocial.errors});
+    }
+
+    auth.check_token(params)
+      .catch(function (reason) { return Promise.reject(reason); })
+      .then(function (cur_user) {
+        params.cur_user_id = cur_user.id;
+        return user.following(params);
+      })
+      .catch(function (reason) { return Promise.reject(reason); })
+      .then(function (users_result) {
+        res.status(users_result.status);
+        return res.json(users_result);
+      })
+      .catch(function (reason) {
+        res.status(reason.status);
+        return res.json(reason);
+      });
   }
 
 };

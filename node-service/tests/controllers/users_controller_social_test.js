@@ -51,7 +51,7 @@ var teardownUser = function (cb) {
 
 describe('users_controller_social', () => {
   it('setup', function (done) {
-    async.series(arr_from_loop(setupUser, 4), done);
+    async.series(arr_from_loop(setupUser, 2), done);
   });
 
   it('follow a user', function (done) {
@@ -106,6 +106,30 @@ describe('users_controller_social', () => {
       });
   });
 
+  it('get following returns users followed (user that followed)', function (done) {
+    api.get('/users/following?token=' + testuserList[0].token + '&id=' + testuserList[0].id)
+      .end(function (err, response) {
+        assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
+        assert.equal(response.status, 200);
+        assert.equal(response.body.users[0].id, testuserList[1].id);
+        assert.equal(response.body.users[0].did_follow, true);
+        assert.equal(response.body.users[0].follows_you, false);
+        done();
+      });
+  });
+
+  it('get following returns users followed (user that was followed)', function (done) {
+    api.get('/users/following?token=' + testuserList[1].token + '&id=' + testuserList[0].id)
+      .end(function (err, response) {
+        assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
+        assert.equal(response.status, 200);
+        assert.equal(response.body.users[0].id, testuserList[1].id);
+        assert.equal(response.body.users[0].did_follow, false);
+        assert.equal(response.body.users[0].follows_you, false);
+        done();
+      });
+  });
+
   it('follow a user back', function (done) {
     api.post('/users/follow').send({
       followed_id: testuserList[0].id,
@@ -129,6 +153,30 @@ describe('users_controller_social', () => {
         assert.equal(response.body.users[0].id, testuserList[0].id);
         assert.equal(response.body.users[0].did_follow, true);
         assert.equal(response.body.users[0].follows_you, true);
+        done();
+      });
+  });
+
+  it('get following returns users followed (user that followed)', function (done) {
+    api.get('/users/following?token=' + testuserList[0].token + '&id=' + testuserList[0].id)
+      .end(function (err, response) {
+        assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
+        assert.equal(response.status, 200);
+        assert.equal(response.body.users[0].id, testuserList[1].id);
+        assert.equal(response.body.users[0].did_follow, true);
+        assert.equal(response.body.users[0].follows_you, true);
+        done();
+      });
+  });
+
+  it('get following returns users followed (user that was followed)', function (done) {
+    api.get('/users/following?token=' + testuserList[1].token + '&id=' + testuserList[0].id)
+      .end(function (err, response) {
+        assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
+        assert.equal(response.status, 200);
+        assert.equal(response.body.users[0].id, testuserList[1].id);
+        assert.equal(response.body.users[0].did_follow, false); // cannot follow yourself
+        assert.equal(response.body.users[0].follows_you, false); // cannot follow yourself
         done();
       });
   });
@@ -162,6 +210,6 @@ describe('users_controller_social', () => {
   });
 
   it('teardown', function (done) {
-    async.series(arr_from_loop(teardownUser, 4), done);
+    async.series(arr_from_loop(teardownUser, 2), done);
   });
 });
