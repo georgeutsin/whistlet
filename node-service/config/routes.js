@@ -13,11 +13,11 @@ module.exports = {
     app.post('/users/unfollow', controllers.users.unfollow);
     app.get('/users/followers', controllers.users.followers);
     app.get('/users/following', controllers.users.following);
-  // app.get('/users/broadcast_owner', controllers.users.broadcast_owner)
-  // app.get('/users/search', controllers.users.search)
-  // app.post('/users/upload_image', controllers.users.upload_image)
-  //
-  // app.post('/broadcasts', controllers.broadcasts.create)
+    // app.get('/users/broadcast_owner', controllers.users.broadcast_owner)
+    // app.get('/users/search', controllers.users.search)
+    // app.post('/users/upload_image', controllers.users.upload_image)
+    //
+    app.post('/broadcasts', controllers.broadcasts.create);
   // app.post('/broadcasts/upload_image', controllers.broadcasts.upload_image)
   // app.delete('/broadcasts', controllers.broadcasts.delete)
   // app.get('/broadcasts/home', controllers.broadcasts.home)
