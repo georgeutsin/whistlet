@@ -25,6 +25,8 @@ var arr_from_loop = function (func, num) {
   return arr;
 };
 
+var broadcastList = [];
+
 var setupUser = function (cb) {
   cur_testuser = new Testuser();
   api.post('/users').send(cur_testuser)
@@ -63,6 +65,18 @@ describe('broadcasts_controller', () => {
         assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
         assert.equal(response.status, 201);
         assert.equal(response.body.broadcast.text, 'My broadcast text');
+        assert.equal(response.body.broadcast.user_id, undefined); // make sure user_id isn't serialized
+        broadcastList.push(response.body.broadcast);
+        done();
+      });
+  });
+
+  it('delete a broadcast', function (done) {
+    api.delete('/broadcasts').send({token: testuserList[0].token, id: broadcastList[0].id})
+      .end(function (err, response) {
+        assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
+        assert.equal(response.status, 200);
+        assert.equal(response.body.broadcast.deleted, true);
         done();
       });
   });

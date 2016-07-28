@@ -37,7 +37,7 @@ function Broadcast () {
 
   this.get = function (params) {
     return connection.acquire(function (con, resolve, reject) {
-      var query = 'SELECT id, text, created_at, metadata, reply_to FROM broadcasts WHERE id = ? LIMIT 1;';
+      var query = 'SELECT id, user_id, text, created_at, metadata, reply_to FROM broadcasts WHERE id = ? LIMIT 1;';
       query = mysql.format(query, params.id);
 
       con.query(query, function (err, result) {
@@ -46,6 +46,22 @@ function Broadcast () {
           reject({'error': true, 'status': 400, 'details': [{'message': 'Error: ' + err.code}]});
         } else {
           resolve({'error': false, 'status': 200, 'broadcast': result[0]});
+        }
+      });
+    });
+  };
+
+  this.delete = function (params) {
+    return connection.acquire(function (con, resolve, reject) {
+      var query = 'DELETE FROM broadcasts WHERE id = ?';
+      query = mysql.format(query, params.id);
+      console.log(query);
+      con.query(query, function (err, result) {
+        con.release();
+        if (err) {
+          reject({'error': true, 'status': 400, 'details': [{'message': 'Error: ' + err.code}]});
+        } else {
+          resolve({'error': false, 'status': 200, 'broadcast': {id: params.id, deleted: true}});
         }
       });
     });

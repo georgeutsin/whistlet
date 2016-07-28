@@ -18,8 +18,8 @@ module.exports = {
     // app.post('/users/upload_image', controllers.users.upload_image)
     //
     app.post('/broadcasts', controllers.broadcasts.create);
-  // app.post('/broadcasts/upload_image', controllers.broadcasts.upload_image)
-  // app.delete('/broadcasts', controllers.broadcasts.delete)
+    // app.post('/broadcasts/upload_image', controllers.broadcasts.upload_image)
+    app.delete('/broadcasts', controllers.broadcasts.delete);
   // app.get('/broadcasts/home', controllers.broadcasts.home)
   // app.get('/broadcasts/explore', controllers.broadcasts.explore)
   // app.get('/broadcasts/profile', controllers.broadcasts.profile)

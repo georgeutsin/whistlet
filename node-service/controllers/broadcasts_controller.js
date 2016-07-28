@@ -13,6 +13,9 @@ module.exports = {
     if (!valid) {
       res.status(400);
       return res.json({error: true, details: validateBroadcast.errors});
+    } else if (!params.text && !params.metadata) {
+      res.status(400);
+      return res.json({error: true, details: { message: 'Must have a broadcast or an image' }});
     }
 
     auth.check_token(params)
@@ -23,10 +26,39 @@ module.exports = {
         return broadcast.create(bc);
       })
       .catch(function (reason) { return Promise.reject(reason); })
-      .then(function (broadcast_result) {
+      .then(function (result) {
         res.status(201);
-        broadcast_result.status = 201;
-        return res.json(broadcast_result);
+        result.status = 201;
+        result.broadcast = _.pick(result.broadcast, 'id', 'text', 'created_at', 'metadata');
+        return res.json(result);
+      })
+      .catch(function (reason) {
+        res.status(reason.status);
+        return res.json(reason);
+      });
+  },
+
+  delete: function (req, res) {
+    var params = _.pick(req.body, 'token', 'id');
+    var valid = validateBroadcast(params);
+    if (!valid) {
+      res.status(400);
+      return res.json({error: true, details: validateBroadcast.errors});
+    }
+
+    auth.check_token(params)
+      .catch(function (reason) { return Promise.reject(reason); })
+      .then(function (cur_user) {
+        return broadcast.get(params);
+      })
+      .catch(function (reason) { return Promise.reject(reason); })
+      .then(function (broadcast_result) {
+        return broadcast.delete(broadcast_result.broadcast);
+      })
+      .catch(function (reason) { return Promise.reject(reason); })
+      .then(function (result) {
+        res.status(result.status);
+        return res.json(result);
       })
       .catch(function (reason) {
         res.status(reason.status);
