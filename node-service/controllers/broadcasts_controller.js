@@ -64,5 +64,26 @@ module.exports = {
         res.status(reason.status);
         return res.json(reason);
       });
+  },
+
+  explore: function (req, res) {
+    var params = _.pick(req.query, 'token', 'order_date');
+
+    auth.check_token(params)
+      .catch(function (reason) { return Promise.reject(reason); })
+      .then(function (cur_user) {
+        params.cur_user_id = cur_user.id;
+        return broadcast.explore(params);
+      })
+      .catch(function (reason) { return Promise.reject(reason); })
+      .then(function (broadcasts_result) {
+        res.status(broadcasts_result.status);
+        return res.json(broadcasts_result);
+      })
+      .catch(function (reason) {
+        res.status(reason.status);
+        return res.json(reason);
+      });
   }
+
 };

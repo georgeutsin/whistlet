@@ -71,6 +71,22 @@ describe('broadcasts_controller', () => {
       });
   });
 
+  it('get all broadcasts', function (done) {
+    api.get('/broadcasts/explore?token=' + testuserList[0].token)
+      .end(function (err, response) {
+        assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
+        assert.equal(response.status, 200);
+        assert.equal(response.body.broadcasts[0].id, broadcastList[0].id);
+        assert.equal(response.body.broadcasts[0].text, broadcastList[0].text);
+        assert.equal(response.body.broadcasts[0].rebroadcast_count, 0);
+        assert.equal(response.body.broadcasts[0].did_rebroadcast, false);
+        assert.equal(response.body.broadcasts[0].is_rebroadcast, false);
+        assert.equal(response.body.broadcasts[0].is_own_broadcast, true);
+        assert.equal(response.body.broadcasts[0].rebroadcast_id, 0);
+        done();
+      });
+  });
+
   it('delete a broadcast', function (done) {
     api.delete('/broadcasts').send({token: testuserList[0].token, id: broadcastList[0].id})
       .end(function (err, response) {
