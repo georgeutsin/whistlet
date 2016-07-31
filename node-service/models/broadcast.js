@@ -66,28 +66,125 @@ function Broadcast () {
   this.explore = function (params) {
     return connection.acquire(function (con, resolve, reject) {
       var values = [];
-      var query = `SELECT id, text, created_at, created_at AS order_date, metadata, reply_to,
-        (
-          SELECT COUNT(*)
-          FROM rebroadcasts
-          WHERE broadcasts.id = rebroadcasts.broadcast_id
-        ) AS rebroadcast_count,
-        did_rebroadcast,
-        0 AS is_rebroadcast,
-        (SELECT IF(user_id = ?, 1, 0) )AS is_own_broadcast,
-        0 AS rebroadcast_id
-        FROM broadcasts
-        LEFT JOIN (
-          SELECT id AS did_rebroadcast, broadcast_id
-          FROM rebroadcasts
-          WHERE rebroadcasts.user_id = ?
-        ) AS RB ON broadcasts.id = RB.broadcast_id `;
+      var query = `
+      SELECT id, text, created_at, created_at AS order_date, metadata, reply_to,
+      (
+        SELECT COUNT(*)
+        FROM rebroadcasts
+        WHERE broadcasts.id = rebroadcasts.broadcast_id
+      ) AS rebroadcast_count,
+      did_rebroadcast,
+      0 AS is_rebroadcast,
+      (SELECT IF(user_id = ?, 1, 0)) AS is_own_broadcast,
+      0 AS rebroadcast_id
+      FROM broadcasts
+      LEFT JOIN (
+        SELECT id AS did_rebroadcast, broadcast_id
+        FROM rebroadcasts
+        WHERE rebroadcasts.user_id = ?
+      ) AS RB ON broadcasts.id = RB.broadcast_id `;
       values.push(params.cur_user_id, params.cur_user_id);
       if (params.order_date) {
         query += ' WHERE broadcasts.created_at < ? ';
         values.push(params.order_date);
       }
       query += ' ORDER BY order_date DESC LIMIT 20; ';
+      query = mysql.format(query, values);
+
+      con.query(query, function (err, result) {
+        con.release();
+        if (err) {
+          reject({'error': true, 'status': 400, 'details': [{'message': 'Error: ' + err.code}]});
+        } else {
+          result = result.map(function (row) {
+            row.did_rebroadcast = (row.did_rebroadcast && row.did_rebroadcast > 0) ? true : false;
+            row.is_rebroadcast = (row.is_rebroadcast && row.is_rebroadcast > 0) ? true : false;
+            row.is_own_broadcast = (row.is_own_broadcast && row.is_own_broadcast > 0) ? true : false;
+            return row;
+          });
+          resolve({'error': false, 'status': 200, 'broadcasts': result});
+        }
+      });
+    });
+  };
+
+  this.home = function (params) {
+    return connection.acquire(function (con, resolve, reject) {
+      var values = [];
+      var broadcasts_query = `
+      UNION
+      SELECT id, text, created_at, created_at AS order_date, metadata, reply_to,
+      (
+        SELECT COUNT(*)
+        FROM rebroadcasts
+        WHERE broadcasts.id = rebroadcasts.broadcast_id
+      ) AS rebroadcast_count,
+      did_rebroadcast,
+      0 AS is_rebroadcast,
+      (SELECT IF(broadcasts.user_id = ?, 1, 0)) AS is_own_broadcast,
+      0 AS rebroadcast_id
+      FROM broadcasts
+      INNER JOIN (
+        SELECT id AS filter_user_id
+        FROM users
+        LEFT JOIN (
+          SELECT followed_id
+          FROM follows
+          WHERE follows.user_id = ?
+        ) AS F1 ON followed_id = users.id
+        WHERE followed_id = users.id OR users.id = ?
+      ) AS U1 ON (user_id = U1.filter_user_id)
+      LEFT JOIN (
+        SELECT id AS did_rebroadcast, broadcast_id
+        FROM rebroadcasts
+        WHERE rebroadcasts.user_id = ?
+      ) AS RB1 ON broadcasts.id = RB1.broadcast_id `;
+      var broadcasts_values = [params.cur_user_id, params.cur_user_id, params.cur_user_id, params.cur_user_id];
+
+      var query = `
+      SELECT broadcasts.id, text, created_at, created_at AS order_date, metadata, reply_to,
+      (
+        SELECT COUNT(*)
+        FROM rebroadcasts
+        WHERE broadcasts.id = rebroadcasts.broadcast_id
+      ) AS rebroadcast_count,
+      did_rebroadcast,
+      0 AS is_rebroadcast,
+      (SELECT IF(broadcasts.user_id = ?, 1, 0)) AS is_own_broadcast,
+      0 AS rebroadcast_id
+      FROM broadcasts
+      INNER JOIN (
+        SELECT created_at AS order_date, broadcast_id, id, user_id
+        FROM rebroadcasts
+      ) AS RB2 ON broadcasts.id = RB2.broadcast_id
+      INNER JOIN (
+        SELECT id AS filter_user_id
+        FROM users
+        LEFT JOIN (
+          SELECT followed_id
+          FROM follows
+          WHERE follows.user_id = ?
+        ) AS F2 ON followed_id = users.id
+        WHERE followed_id = users.id OR users.id = ?
+      ) AS U2 ON (RB2.user_id = U2.filter_user_id)
+      LEFT JOIN (
+        SELECT id AS did_rebroadcast, broadcast_id
+        FROM rebroadcasts
+        WHERE rebroadcasts.user_id = ?
+      ) AS RB3 ON broadcasts.id = RB3.broadcast_id `;
+      values.push(params.cur_user_id, params.cur_user_id, params.cur_user_id, params.cur_user_id);
+      if (params.order_date) {
+        query += ' WHERE order_date < ?';
+        values.push(params.order_date);
+        query += broadcasts_query;
+        values.push.apply(values, broadcasts_values);
+        query += ' WHERE created_at < ? ';
+        values.push(params.order_date);
+      } else {
+        query += broadcasts_query;
+        values.push.apply(values, broadcasts_values);
+      }
+      query += ' ORDER BY order_date DESC LIMIT 10;';
       query = mysql.format(query, values);
 
       con.query(query, function (err, result) {
