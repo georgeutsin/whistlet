@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Broadcast",
+  "description": "Broadcast object",
+  "type": "object",
+  "properties": {
+    "id": {
+      "description": "positive integer or string of digits",
+      "type": ["string", "integer"],
+      "pattern": "^[1-9][0-9]*$"
+    },
+    "user_id": {
+      "description": "positive integer or string of digits",
+      "type": ["string", "integer"],
+      "pattern": "^[1-9][0-9]*$"
+    },
+    "reply_to": {
+      "description": "positive integer or string of digits",
+      "type": ["string", "integer"],
+      "pattern": "^[1-9][0-9]*$"
+    },
+    "text": {
+      "description": "min length of 1 chars, max length of 210 chars",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 210
+    },
+    "metadata": {
+      "description": "max length of 5000 chars",
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 5000
+    }
+  }
+}
