@@ -148,6 +148,18 @@ describe('broadcasts_controller', () => {
       });
   });
 
+  it('cannot rebroadcast same broadcast', function (done) {
+    api.post('/broadcasts/rebroadcast').send({
+      broadcast_id: broadcastList[0].id,
+      token: testuserList[1].token
+    })
+      .end(function (err, response) {
+        assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
+        assert.equal(response.status, 400);
+        done();
+      });
+  });
+
   it('get profile broadcasts for user that rebroadcasted (rb user)', function (done) {
     api.get('/broadcasts/profile?token=' + testuserList[1].token + '&id=' + testuserList[1].id)
       .end(function (err, response) {
@@ -202,6 +214,18 @@ describe('broadcasts_controller', () => {
         assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
         assert.equal(response.status, 200);
         assert.equal(response.body.broadcast.id, broadcastList[0].id);
+        done();
+      });
+  });
+
+  it('cannot unrebroadcast non existent rebroadcast', function (done) {
+    api.post('/broadcasts/unrebroadcast').send({
+      broadcast_id: broadcastList[0].id,
+      token: testuserList[1].token
+    })
+      .end(function (err, response) {
+        assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
+        assert.equal(response.status, 400);
         done();
       });
   });

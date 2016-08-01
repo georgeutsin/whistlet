@@ -295,7 +295,7 @@ function Broadcast () {
           reject({'error': true, 'status': 400, 'details': [{'message': 'Error: ' + err.code}]});
         } else {
           if (result.affectedRows === 0) {
-            reject({'error': true, 'status': 400, 'details': [{'message': 'Error: follow already exists'}]});
+            reject({'error': true, 'status': 400, 'details': [{'message': 'Error: rebroadcast already exists'}]});
           } else {
             resolve(broadcastObj.get({id: params.broadcast_id}));
           }
@@ -316,7 +316,7 @@ function Broadcast () {
           reject({'error': true, 'status': 400, 'details': [{'message': 'Error: ' + err.code}]});
         } else {
           if (result.affectedRows === 0) {
-            reject({'error': true, 'status': 400, 'details': [{'message': 'Error: follow does not exist'}]});
+            reject({'error': true, 'status': 400, 'details': [{'message': 'Error: rebroadcast does not exist'}]});
           } else {
             resolve(broadcastObj.get({id: params.broadcast_id}));
           }
