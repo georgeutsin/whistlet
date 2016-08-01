@@ -135,15 +135,96 @@ describe('broadcasts_controller', () => {
       });
   });
 
-  // it('delete a broadcast', function (done) {
-  //   api.delete('/broadcasts').send({token: testuserList[0].token, id: broadcastList[0].id})
-  //     .end(function (err, response) {
-  //       assert.equal(response.header['content-type'], 'application/json; charset=utf-8')
-  //       assert.equal(response.status, 200)
-  //       assert.equal(response.body.broadcast.deleted, true)
-  //       done()
-  //     })
-  // })
+  it('make a rebroadcast', function (done) {
+    api.post('/broadcasts/rebroadcast').send({
+      broadcast_id: broadcastList[0].id,
+      token: testuserList[1].token
+    })
+      .end(function (err, response) {
+        assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
+        assert.equal(response.status, 201);
+        assert.equal(response.body.broadcast.id, broadcastList[0].id);
+        done();
+      });
+  });
+
+  it('get profile broadcasts for user that rebroadcasted (rb user)', function (done) {
+    api.get('/broadcasts/profile?token=' + testuserList[1].token + '&id=' + testuserList[1].id)
+      .end(function (err, response) {
+        assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
+        assert.equal(response.status, 200);
+        assert.equal(response.body.broadcasts[0].id, broadcastList[0].id);
+        assert.equal(response.body.broadcasts[0].text, broadcastList[0].text);
+        assert.equal(response.body.broadcasts[0].rebroadcast_count, 1);
+        assert.equal(response.body.broadcasts[0].did_rebroadcast, true);
+        assert.equal(response.body.broadcasts[0].is_rebroadcast, true);
+        assert.equal(response.body.broadcasts[0].is_own_broadcast, false);
+        done();
+      });
+  });
+
+  it('get profile broadcasts for user that rebroadcasted (bc user)', function (done) {
+    api.get('/broadcasts/profile?token=' + testuserList[0].token + '&id=' + testuserList[1].id)
+      .end(function (err, response) {
+        assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
+        assert.equal(response.status, 200);
+        assert.equal(response.body.broadcasts[0].id, broadcastList[0].id);
+        assert.equal(response.body.broadcasts[0].text, broadcastList[0].text);
+        assert.equal(response.body.broadcasts[0].rebroadcast_count, 1);
+        assert.equal(response.body.broadcasts[0].did_rebroadcast, false);
+        assert.equal(response.body.broadcasts[0].is_rebroadcast, true);
+        assert.equal(response.body.broadcasts[0].is_own_broadcast, true);
+        done();
+      });
+  });
+
+  it('get home broadcasts for user that posted the rebroadcast', function (done) {
+    api.get('/broadcasts/home?token=' + testuserList[1].token)
+      .end(function (err, response) {
+        assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
+        assert.equal(response.status, 200);
+        assert.equal(response.body.broadcasts[0].id, broadcastList[0].id);
+        assert.equal(response.body.broadcasts[0].text, broadcastList[0].text);
+        assert.equal(response.body.broadcasts[0].rebroadcast_count, 1);
+        assert.equal(response.body.broadcasts[0].did_rebroadcast, true);
+        assert.equal(response.body.broadcasts[0].is_rebroadcast, true);
+        assert.equal(response.body.broadcasts[0].is_own_broadcast, false);
+        done();
+      });
+  });
+
+  it('unrebroadcast a broadcast', function (done) {
+    api.post('/broadcasts/unrebroadcast').send({
+      broadcast_id: broadcastList[0].id,
+      token: testuserList[1].token
+    })
+      .end(function (err, response) {
+        assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
+        assert.equal(response.status, 200);
+        assert.equal(response.body.broadcast.id, broadcastList[0].id);
+        done();
+      });
+  });
+
+  it('get profile broadcasts for user that rebroadcasted (rb user)', function (done) {
+    api.get('/broadcasts/profile?token=' + testuserList[1].token + '&id=' + testuserList[1].id)
+      .end(function (err, response) {
+        assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
+        assert.equal(response.status, 200);
+        assert.equal(response.body.broadcasts.length, 0);
+        done();
+      });
+  });
+
+  it('delete a broadcast', function (done) {
+    api.delete('/broadcasts').send({token: testuserList[0].token, id: broadcastList[0].id})
+      .end(function (err, response) {
+        assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
+        assert.equal(response.status, 200);
+        assert.equal(response.body.broadcast.deleted, true);
+        done();
+      });
+  });
 
   it('teardown', function (done) {
     async.series(arr_from_loop(teardownUser, 2), done);

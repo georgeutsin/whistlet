@@ -24,8 +24,8 @@ module.exports = {
     app.get('/broadcasts/explore', controllers.broadcasts.explore);
     app.get('/broadcasts/profile', controllers.broadcasts.profile);
     app.get('/broadcasts/search', controllers.broadcasts.search);
-  // app.post('/broadcasts/rebroadcast', controllers.broadcasts.rebroadcast)
-  // app.post('/broadcasts/unrebroadcast', controllers.broadcasts.unrebroadcast)
+    app.post('/broadcasts/rebroadcast', controllers.broadcasts.rebroadcast);
+    app.post('/broadcasts/unrebroadcast', controllers.broadcasts.unrebroadcast);
   //
   // app.get('/notifications', controllers.notifications.get)
   // app.update('/notifications/read', controllers.notifications.read)

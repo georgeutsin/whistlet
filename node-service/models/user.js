@@ -189,7 +189,6 @@ function User () {
   };
 
   this.follow = function (params) {
-    userObj = this;
     return connection.acquire(function (con, resolve, reject) {
       var query = `
       INSERT INTO
@@ -218,7 +217,6 @@ function User () {
   };
 
   this.unfollow = function (params) {
-    userObj = this;
     return connection.acquire(function (con, resolve, reject) {
       var query = `DELETE FROM follows WHERE user_id = ? AND followed_id = ?`;
       values = [params.id, params.followed_id];

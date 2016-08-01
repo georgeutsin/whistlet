@@ -277,7 +277,6 @@ function Broadcast () {
   };
 
   this.rebroadcast = function (params) {
-    userObj = this;
     return connection.acquire(function (con, resolve, reject) {
       var query = `
       INSERT INTO
@@ -306,9 +305,8 @@ function Broadcast () {
   };
 
   this.unrebroadcast = function (params) {
-    userObj = this;
     return connection.acquire(function (con, resolve, reject) {
-      var query = `DELETE FROM follows WHERE user_id = ? AND broadcast_id = ?`;
+      var query = `DELETE FROM rebroadcasts WHERE user_id = ? AND broadcast_id = ?`;
       values = [params.user_id, params.broadcast_id];
       query = mysql.format(query, values);
 

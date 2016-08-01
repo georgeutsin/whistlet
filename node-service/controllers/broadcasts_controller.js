@@ -165,7 +165,7 @@ module.exports = {
       .then(function (broadcast_result) {
         res.status(201);
         broadcast_result.status = 201;
-        broadcast_result.broadcast = _.pick(result.broadcast, 'id', 'text', 'created_at', 'metadata');
+        broadcast_result.broadcast = _.pick(broadcast_result.broadcast, 'id', 'text', 'created_at', 'metadata');
         return res.json(broadcast_result);
       })
       .catch(function (reason) {
@@ -191,7 +191,7 @@ module.exports = {
       .catch(function (reason) { return Promise.reject(reason); })
       .then(function (broadcast_result) {
         res.status(broadcast_result.status);
-        broadcast_result.broadcast = _.pick(result.broadcast, 'id', 'text', 'created_at', 'metadata');
+        broadcast_result.broadcast = _.pick(broadcast_result.broadcast, 'id', 'text', 'created_at', 'metadata');
         return res.json(broadcast_result);
       })
       .catch(function (reason) {
