@@ -240,6 +240,16 @@ describe('broadcasts_controller', () => {
       });
   });
 
+  it('get broadcast_owner', function (done) {
+    api.get('/users/broadcast_owner?token=' + testuserList[1].token + '&broadcast_id=' + broadcastList[0].id)
+      .end(function (err, response) {
+        assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
+        assert.equal(response.status, 200);
+        assert(response.body.user);
+        done();
+      });
+  });
+
   it('delete a broadcast', function (done) {
     api.delete('/broadcasts').send({token: testuserList[0].token, id: broadcastList[0].id})
       .end(function (err, response) {

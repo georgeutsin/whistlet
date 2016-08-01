@@ -344,6 +344,110 @@ function User () {
       });
     });
   };
+
+  this.broadcast_owner = function (params) {
+    return connection.acquire(function (con, resolve, reject) {
+      query = 'SELECT id, username, name, ';
+      values = [];
+      if (params.rebroadcast_id) {
+        query += `
+        (SELECT username FROM users
+          WHERE users.id = (
+            SELECT user_id
+            FROM rebroadcasts
+            WHERE rebroadcasts.id = ? LIMIT 1
+          )
+        ) AS rebroadcast_username,
+        (SELECT created_at FROM rebroadcasts WHERE rebroadcasts.id = ? ) AS order_date, `;
+        values.push(params.rebroadcast_id, params.rebroadcast_id);
+      } else {
+        query += ' NULL AS rebroadcast_username, NULL AS order_date, ';
+      }
+      query += `
+      avatar_hash
+      FROM users
+      WHERE users.id = (
+        SELECT broadcasts.user_id
+        FROM broadcasts
+        WHERE broadcasts.id = ? LIMIT 1);`;
+      values.push(params.broadcast_id);
+      query = mysql.format(query, values);
+
+      con.query(query, function (err, result) {
+        con.release();
+        if (err) {
+          reject({'error': true, 'status': 400, 'details': [{'message': 'Error: ' + err.code}]});
+        } else {
+          if (result[0]) {
+            resolve({'error': false, 'status': 200, 'user': result[0]});
+          } else {
+            reject({'error': true, 'status': 404, 'details': [{'message': 'Error: user not found'}]});
+          }
+        }
+      });
+    });
+  };
+
+  this.search = function (params) {
+    return connection.acquire(function (con, resolve, reject) {
+      var values = [];
+      var query = `
+      SELECT id, username, name, amp, created_at, avatar_hash,
+      followers, following, did_follow, follows_you
+      FROM users
+      INNER JOIN (
+        SELECT COUNT(*) AS followers
+        FROM follows
+        WHERE followed_id = id
+      ) AS FOLLOWERS
+      INNER JOIN (
+        SELECT COUNT(*) AS following
+        FROM follows
+        WHERE user_id = id
+      ) AS FOLLOWING
+      INNER JOIN `;
+      if (params.cur_user_id) {
+        query += `
+        (SELECT COUNT(*) AS did_follow FROM follows
+        WHERE followed_id = id
+        AND user_id= ?) AS DIDFOLLOW
+        LEFT JOIN (
+          SELECT 1 AS follows_you
+          , follows.user_id
+          FROM follows
+          WHERE follows.followed_id = ?
+        ) AS F3 ON F3.user_id = users.id `;
+        values.push(params.cur_user_id, params.cur_user_id);
+      } else {
+        query += `
+        (SELECT 0 AS did_follow) AS DIDFOLLOW
+        INNER JOIN (SELECT 0 AS follows_you) AS FOLLOWSYOU`;
+      }
+      query += 'WHERE users.id != ?';
+      values.push(params.cur_user_id);
+      if (params.order_date) {
+        query += ' AND created_at < ? ';
+        values.push(params.order_date);
+      }
+      query += ' AND (username LIKE ? OR name LIKE ?) ORDER BY created_at DESC LIMIT 20;';
+      values.push('%' + params.search_query + '%', '%' + params.search_query + '%');
+      query = mysql.format(query, values);
+
+      con.query(query, function (err, result) {
+        con.release();
+        if (err) {
+          reject({'error': true, 'status': 400, 'details': [{'message': 'Error: ' + err.code}]});
+        } else {
+          result = result.map(function (row) {
+            row.follows_you = (row.follows_you && row.follows_you > 0) ? true : false;
+            row.did_follow = (row.did_follow && row.did_follow > 0) ? true : false;
+            return row;
+          });
+          resolve({'error': false, 'status': 200, 'users': result});
+        }
+      });
+    });
+  };
 }
 
 module.exports = new User();
