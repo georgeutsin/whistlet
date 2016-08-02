@@ -284,6 +284,45 @@ module.exports = {
         res.status(reason.status);
         return res.json(reason);
       });
+  },
+
+  broadcast_owner: function (req, res) {
+    var params = _.pick(req.query, 'broadcast_id', 'rebroadcast_id', 'token');
+
+    auth.check_token(params)
+      .catch(function (reason) { return Promise.reject(reason); })
+      .then(function (cur_user) {
+        return user.broadcast_owner(params);
+      })
+      .catch(function (reason) { return Promise.reject(reason); })
+      .then(function (user_result) {
+        res.status(user_result.status);
+        return res.json(user_result);
+      })
+      .catch(function (reason) {
+        res.status(reason.status);
+        return res.json(reason);
+      });
+  },
+
+  search: function (req, res) {
+    var params = _.pick(req.query, 'token', 'order_date', 'search_query');
+
+    auth.check_token(params)
+      .catch(function (reason) { return Promise.reject(reason); })
+      .then(function (cur_user) {
+        params.cur_user_id = cur_user.id;
+        return user.search(params);
+      })
+      .catch(function (reason) { return Promise.reject(reason); })
+      .then(function (users_result) {
+        res.status(users_result.status);
+        return res.json(users_result);
+      })
+      .catch(function (reason) {
+        res.status(reason.status);
+        return res.json(reason);
+      });
   }
 
 };

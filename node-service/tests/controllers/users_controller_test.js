@@ -240,6 +240,16 @@ describe('users_controller', () => {
       });
   });
 
+  it('search for users', function (done) {
+    api.get('/users/search?search_query=' + 'testuser' + '&token=' + cur_token)
+      .end(function (err, response) {
+        assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
+        assert.equal(response.status, 200);
+        assert(response.body.users.length > 0);
+        done();
+      });
+  });
+
   // LOGOUT
   // ----------------------------------------------------------------------------
   it('logout a user', function (done) {
