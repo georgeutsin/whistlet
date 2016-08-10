@@ -4,17 +4,19 @@ var auth = require('../models/auth');
 var Ajv = require('ajv');
 var ajv = new Ajv({allErrors: true});
 
-var validateSocial = ajv.compile(social.socialSchema);
-
+var validates = {};
+for (var schema in social.schemas) {
+  validates[schema] = ajv.compile(social.schemas[schema]);
+}
 var endpoints = social.socialSchema.endpoints;
 
 module.exports = {
   follow: function (req, res) {
     var params = _.pick(req.body, endpoints.follow.permitted_fields);
-    var valid = validateSocial(params);
+    var valid = validates.follow(params);
     if (!valid) {
       res.status(400);
-      return res.json({error: true, details: validateSocial.errors});
+      return res.json({error: true, details: validates.follow.errors});
     }
 
     auth.check_token(params)
@@ -37,10 +39,10 @@ module.exports = {
 
   unfollow: function (req, res) {
     var params = _.pick(req.body, endpoints.unfollow.permitted_fields);
-    var valid = validateSocial(params);
+    var valid = validates.unfollow(params);
     if (!valid) {
       res.status(400);
-      return res.json({error: true, details: validateSocial.errors});
+      return res.json({error: true, details: validates.unfollow.errors});
     }
 
     auth.check_token(params)
@@ -62,10 +64,10 @@ module.exports = {
 
   followers: function (req, res) {
     var params = _.pick(req.query, endpoints.followers.permitted_fields);
-    var valid = validateSocial(params);
+    var valid = validates.followers(params);
     if (!valid) {
       res.status(400);
-      return res.json({error: true, details: validateSocial.errors});
+      return res.json({error: true, details: validates.followers.errors});
     }
 
     auth.check_token(params)
@@ -87,10 +89,10 @@ module.exports = {
 
   following: function (req, res) {
     var params = _.pick(req.query, endpoints.following.permitted_fields);
-    var valid = validateSocial(params);
+    var valid = validates.following(params);
     if (!valid) {
       res.status(400);
-      return res.json({error: true, details: validateSocial.errors});
+      return res.json({error: true, details: validates.following.errors});
     }
 
     auth.check_token(params)
@@ -112,6 +114,11 @@ module.exports = {
 
   broadcast_owner: function (req, res) {
     var params = _.pick(req.query, endpoints.broadcast_owner.permitted_fields);
+    var valid = validates.broadcast_owner(params);
+    if (!valid) {
+      res.status(400);
+      return res.json({error: true, details: validates.broadcast_owner.errors});
+    }
 
     auth.check_token(params)
       .catch(function (reason) { return Promise.reject(reason); })

@@ -5,6 +5,11 @@ var userObj = require('../models/user');
 
 function Social () {
   this.socialSchema = require('./schemas/social_schema');
+  this.schemas = {};
+  for (var endpoint in this.socialSchema.endpoints) {
+    this.schemas[endpoint] = Object.assign({}, this.socialSchema,
+      { required: this.socialSchema.endpoints[endpoint].required_fields });
+  }
 
   this.follow = function (params) {
     return connection.acquire(function (con, resolve, reject) {
