@@ -4,19 +4,20 @@ var auth = require('../models/auth');
 var Ajv = require('ajv');
 var ajv = new Ajv({allErrors: true});
 
-var validateUser = ajv.compile(user.userSchema);
-var validateUserCreate = ajv.compile(user.userCreateSchema);
-var validateSocial = ajv.compile(user.socialSchema);
+var validates = {};
+for (var schema in user.schemas) {
+  validates[schema] = ajv.compile(user.schemas[schema]);
+}
 
 var endpoints = user.userSchema.endpoints;
 
 module.exports = {
   create: function (req, res) {
     var params = _.pick(req.body, endpoints.create.permitted_fields);
-    var valid = validateUserCreate(params);
+    var valid = validates.create(params);
     if (!valid) {
       res.status(400);
-      return res.json({error: true, details: validateUserCreate.errors});
+      return res.json({error: true, details: validates.create.errors});
     }
 
     user.create(params).then(function (result) {
@@ -31,10 +32,10 @@ module.exports = {
 
   get: function (req, res) {
     var params = _.pick(req.query, endpoints.get.permitted_fields);
-    var valid = validateUser(params);
+    var valid = validates.get(params);
     if (!valid) {
       res.status(400);
-      return res.json({error: true, details: validateUser.errors});
+      return res.json({error: true, details: validates.get.errors});
     }
     params.bypass_auth = true;
     auth.check_token(params)
@@ -67,10 +68,10 @@ module.exports = {
 
   update: function (req, res) {
     var params = _.pick(req.body, endpoints.update.permitted_fields);
-    var valid = validateUser(params);
+    var valid = validates.update(params);
     if (!valid) {
       res.status(400);
-      return res.json({error: true, details: validateUser.errors});
+      return res.json({error: true, details: validates.update.errors});
     }
 
     auth.check_token(params)
@@ -92,7 +93,11 @@ module.exports = {
 
   delete: function (req, res) {
     var params = _.pick(req.body, endpoints.delete.permitted_fields);
-
+    var valid = validates.delete(params);
+    if (!valid) {
+      res.status(400);
+      return res.json({error: true, details: validates.delete.errors});
+    }
     auth.check_token(params)
       .catch(function (reason) { return Promise.reject(reason); })
       .then(function (cur_user) {
@@ -116,10 +121,10 @@ module.exports = {
 
   exists: function (req, res) {
     var params = _.pick(req.query, endpoints.exists.permitted_fields);
-    var valid = validateUser(params);
+    var valid = validates.exists(params);
     if (!valid) {
       res.status(400);
-      return res.json({error: true, details: validateUser.errors});
+      return res.json({error: true, details: validates.exists.errors});
     }
 
     user.details_for_user(params)
@@ -143,6 +148,13 @@ module.exports = {
 
   login: function (req, res) {
     var input = _.pick(req.body, endpoints.login.permitted_fields);
+    var valid = validates.login(input);
+    if (!valid) {
+      res.status(400);
+      console.log(validates.login.errors);
+      return res.json({error: true, details: validates.login.errors});
+    }
+
     var params = { password: input.password };
     if (input.user.indexOf('@') > -1) {
       params.email = input.user;
@@ -175,6 +187,11 @@ module.exports = {
 
   logout: function (req, res) {
     var params = _.pick(req.body, endpoints.logout.permitted_fields);
+    var valid = validates.logout(params);
+    if (!valid) {
+      res.status(400);
+      return res.json({error: true, details: validates.logout.errors});
+    }
 
     auth.delete_token(params)
       .catch(function (reason) { return Promise.reject(reason); })
@@ -187,128 +204,13 @@ module.exports = {
       });
   },
 
-  follow: function (req, res) {
-    var params = _.pick(req.body, 'token', 'followed_id');
-    var valid = validateSocial(params);
-    if (!valid) {
-      res.status(400);
-      return res.json({error: true, details: validateSocial.errors});
-    }
-
-    auth.check_token(params)
-      .catch(function (reason) { return Promise.reject(reason); })
-      .then(function (cur_user) {
-        params.id = cur_user.id;
-        return user.follow(params);
-      })
-      .catch(function (reason) { return Promise.reject(reason); })
-      .then(function (user_result) {
-        res.status(201);
-        user_result.status = 201;
-        return res.json(user_result);
-      })
-      .catch(function (reason) {
-        res.status(reason.status);
-        return res.json(reason);
-      });
-  },
-
-  unfollow: function (req, res) {
-    var params = _.pick(req.body, 'token', 'followed_id');
-    var valid = validateSocial(params);
-    if (!valid) {
-      res.status(400);
-      return res.json({error: true, details: validateSocial.errors});
-    }
-
-    auth.check_token(params)
-      .catch(function (reason) { return Promise.reject(reason); })
-      .then(function (cur_user) {
-        params.id = cur_user.id;
-        return user.unfollow(params);
-      })
-      .catch(function (reason) { return Promise.reject(reason); })
-      .then(function (user_result) {
-        res.status(user_result.status);
-        return res.json(user_result);
-      })
-      .catch(function (reason) {
-        res.status(reason.status);
-        return res.json(reason);
-      });
-  },
-
-  followers: function (req, res) {
-    var params = _.pick(req.query, 'token', 'id', 'last_date');
-    var valid = validateSocial(params);
-    if (!valid) {
-      res.status(400);
-      return res.json({error: true, details: validateSocial.errors});
-    }
-
-    auth.check_token(params)
-      .catch(function (reason) { return Promise.reject(reason); })
-      .then(function (cur_user) {
-        params.cur_user_id = cur_user.id;
-        return user.followers(params);
-      })
-      .catch(function (reason) { return Promise.reject(reason); })
-      .then(function (users_result) {
-        res.status(users_result.status);
-        return res.json(users_result);
-      })
-      .catch(function (reason) {
-        res.status(reason.status);
-        return res.json(reason);
-      });
-  },
-
-  following: function (req, res) {
-    var params = _.pick(req.query, 'token', 'id', 'last_date');
-    var valid = validateSocial(params);
-    if (!valid) {
-      res.status(400);
-      return res.json({error: true, details: validateSocial.errors});
-    }
-
-    auth.check_token(params)
-      .catch(function (reason) { return Promise.reject(reason); })
-      .then(function (cur_user) {
-        params.cur_user_id = cur_user.id;
-        return user.following(params);
-      })
-      .catch(function (reason) { return Promise.reject(reason); })
-      .then(function (users_result) {
-        res.status(users_result.status);
-        return res.json(users_result);
-      })
-      .catch(function (reason) {
-        res.status(reason.status);
-        return res.json(reason);
-      });
-  },
-
-  broadcast_owner: function (req, res) {
-    var params = _.pick(req.query, 'broadcast_id', 'rebroadcast_id', 'token');
-
-    auth.check_token(params)
-      .catch(function (reason) { return Promise.reject(reason); })
-      .then(function (cur_user) {
-        return user.broadcast_owner(params);
-      })
-      .catch(function (reason) { return Promise.reject(reason); })
-      .then(function (user_result) {
-        res.status(user_result.status);
-        return res.json(user_result);
-      })
-      .catch(function (reason) {
-        res.status(reason.status);
-        return res.json(reason);
-      });
-  },
-
   search: function (req, res) {
     var params = _.pick(req.query, endpoints.search.permitted_fields);
+    var valid = validates.search(params);
+    if (!valid) {
+      res.status(400);
+      return res.json({error: true, details: validates.search.errors});
+    }
 
     auth.check_token(params)
       .catch(function (reason) { return Promise.reject(reason); })

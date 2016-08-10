@@ -4,13 +4,11 @@ const crypto = require('crypto');
 
 function User () {
   this.userSchema = require('./schemas/users_schema');
-  required = {required: [
-      'username',
-      'email',
-      'password'
-  ]};
-  this.userCreateSchema = Object.assign({}, this.userSchema, required);
-  this.socialSchema = require('./schemas/social_schema');
+  this.schemas = {};
+  for (var endpoint in this.userSchema.endpoints) {
+    this.schemas[endpoint] = Object.assign({}, this.userSchema,
+      { required: this.userSchema.endpoints[endpoint].required_fields });
+  }
   var userObj = this;
 
   this.create = function (params) {

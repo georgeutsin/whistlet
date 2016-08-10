@@ -4,12 +4,11 @@ const crypto = require('crypto');
 
 function Broadcast () {
   this.broadcastSchema = require('./schemas/broadcasts_schema');
-  required = {required: [
-      'text',
-      'email',
-      'password'
-  ]};
-  this.broadcastCreateSchema = Object.assign({}, this.broadcastSchema, required);
+  this.schemas = {};
+  for (var endpoint in this.broadcastSchema.endpoints) {
+    this.schemas[endpoint] = Object.assign({}, this.broadcastSchema,
+      { required: this.broadcastSchema.endpoints[endpoint].required_fields });
+  }
   var broadcastObj = this;
   var select_broadcasts = `
   SELECT broadcasts.id, text, broadcasts.created_at, broadcasts.created_at AS order_date, metadata, reply_to,

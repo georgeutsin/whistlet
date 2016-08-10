@@ -32,32 +32,57 @@
       "description": "min length of 6 chars",
       "type": "string",
       "minLength": 6
+    },
+    "user": {
+      "description": "username or email",
+      "type": "string"
+    },
+    "token": {
+      "description": "username or email",
+      "type": "string",
+      "maxLength": 128
+    },
+    "order_date": {
+      "description": "date-time of the oldest broadcast",
+      "type": "string",
+      "format": "date-time"
+    },
+    "search_query": {
+      "description": "string to search broadcasts by, max 128 chars",
+      "type": "string",
+      "maxLength": 128
     }
   },
   "endpoints" : {
     "create":{
-      "permitted_fields": ["username", "email", "password", "name"]
+      "permitted_fields": ["username", "email", "password", "name"],
+      "required_fields": ["username", "email", "password"]
     },
     "get": {
       "permitted_fields": ["token", "id", "username"]
     },
     "update": {
-      "permitted_fields": ["token", "name", "username"]
+      "permitted_fields": ["token", "name", "username"],
+      "required_fields": ["token"]
     },
     "delete": {
-      "permitted_fields": ["token"]
+      "permitted_fields": ["token"],
+      "required_fields": ["token"]
     },
     "exists": {
       "permitted_fields": ["username", "email"]
     },
     "login": {
-      "permitted_fields": ["user", "password"]
+      "permitted_fields": ["user", "password"],
+      "required_fields": ["user", "password"]
     },
     "logout": {
-      "permitted_fields": ["token"]
+      "permitted_fields": ["token"],
+      "required_fields": ["token"]
     },
     "search": {
-      "permitted_fields": ["token", "order_date", "search_query"]
+      "permitted_fields": ["token", "order_date", "search_query"],
+      "required_fields": ["token", "search_query"]
     }
   }
 }

@@ -13,23 +13,48 @@
       "description": "positive integer or string of digits",
       "type": ["string", "integer"],
       "pattern": "^[1-9][0-9]*$"
+    },
+    "broadcast_id": {
+      "description": "positive integer or string of digits",
+      "type": ["string", "integer"],
+      "pattern": "^[1-9][0-9]*$"
+    },
+    "rebroadcast_id": {
+      "description": "positive integer or string of digits",
+      "type": ["string", "integer"],
+      "pattern": "^[1-9][0-9]*$"
+    },
+    "last_date": {
+      "description": "date-time of the oldest broadcast",
+      "type": "string",
+      "format": "date-time"
+    },
+    "token": {
+      "description": "string of max length 128 chars",
+      "type": "string",
+      "maxLength": 128
     }
   },
   "endpoints" : {
     "follow":{
-      "permitted_fields": ["token", "followed_id"]
+      "permitted_fields": ["token", "followed_id"],
+      "required_fields": ["token", "followed_id"]
     },
     "unfollow": {
-      "permitted_fields": ["token", "followed_id"]
+      "permitted_fields": ["token", "followed_id"],
+      "required_fields": ["token", "followed_id"]
     },
     "followers": {
-      "permitted_fields": ["token", "id", "last_date"]
+      "permitted_fields": ["token", "id", "last_date"],
+      "required_fields": ["token", "id"]
     },
     "following": {
-      "permitted_fields": ["token", "id", "last_date"]
+      "permitted_fields": ["token", "id", "last_date"],
+      "required_fields": ["token", "id"]
     },
     "broadcast_owner": {
-      "permitted_fields": ["broadcast_id", "rebroadcast_id", "token"]
+      "permitted_fields": ["token", "broadcast_id", "rebroadcast_id"],
+      "required_fields": ["token", "broadcast_id"]
     }
   }
 }
