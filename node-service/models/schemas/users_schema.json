@@ -33,5 +33,31 @@
       "type": "string",
       "minLength": 6
     }
+  },
+  "endpoints" : {
+    "create":{
+      "permitted_fields": ["username", "email", "password", "name"]
+    },
+    "get": {
+      "permitted_fields": ["token", "id", "username"]
+    },
+    "update": {
+      "permitted_fields": ["token", "name", "username"]
+    },
+    "delete": {
+      "permitted_fields": ["token"]
+    },
+    "exists": {
+      "permitted_fields": ["username", "email"]
+    },
+    "login": {
+      "permitted_fields": ["user", "password"]
+    },
+    "logout": {
+      "permitted_fields": ["token"]
+    },
+    "search": {
+      "permitted_fields": ["token", "order_date", "search_query"]
+    }
   }
 }

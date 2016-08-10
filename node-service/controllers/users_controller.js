@@ -8,9 +8,11 @@ var validateUser = ajv.compile(user.userSchema);
 var validateUserCreate = ajv.compile(user.userCreateSchema);
 var validateSocial = ajv.compile(user.socialSchema);
 
+var endpoints = user.userSchema.endpoints;
+
 module.exports = {
   create: function (req, res) {
-    var params = _.pick(req.body, 'username', 'email', 'password');
+    var params = _.pick(req.body, endpoints.create.permitted_fields);
     var valid = validateUserCreate(params);
     if (!valid) {
       res.status(400);
@@ -28,7 +30,7 @@ module.exports = {
   },
 
   get: function (req, res) {
-    var params = _.pick(req.query, 'id', 'username', 'token');
+    var params = _.pick(req.query, endpoints.get.permitted_fields);
     var valid = validateUser(params);
     if (!valid) {
       res.status(400);
@@ -64,7 +66,7 @@ module.exports = {
   },
 
   update: function (req, res) {
-    var params = _.pick(req.body, 'username', 'name', 'token');
+    var params = _.pick(req.body, endpoints.update.permitted_fields);
     var valid = validateUser(params);
     if (!valid) {
       res.status(400);
@@ -89,7 +91,7 @@ module.exports = {
   },
 
   delete: function (req, res) {
-    var params = _.pick(req.body, 'token');
+    var params = _.pick(req.body, endpoints.delete.permitted_fields);
 
     auth.check_token(params)
       .catch(function (reason) { return Promise.reject(reason); })
@@ -113,7 +115,7 @@ module.exports = {
   },
 
   exists: function (req, res) {
-    var params = _.pick(req.query, 'username', 'email');
+    var params = _.pick(req.query, endpoints.exists.permitted_fields);
     var valid = validateUser(params);
     if (!valid) {
       res.status(400);
@@ -140,7 +142,7 @@ module.exports = {
   },
 
   login: function (req, res) {
-    var input = _.pick(req.body, 'user', 'password');
+    var input = _.pick(req.body, endpoints.login.permitted_fields);
     var params = { password: input.password };
     if (input.user.indexOf('@') > -1) {
       params.email = input.user;
@@ -172,7 +174,7 @@ module.exports = {
   },
 
   logout: function (req, res) {
-    var params = _.pick(req.body, 'token');
+    var params = _.pick(req.body, endpoints.logout.permitted_fields);
 
     auth.delete_token(params)
       .catch(function (reason) { return Promise.reject(reason); })
@@ -306,7 +308,7 @@ module.exports = {
   },
 
   search: function (req, res) {
-    var params = _.pick(req.query, 'token', 'order_date', 'search_query');
+    var params = _.pick(req.query, endpoints.search.permitted_fields);
 
     auth.check_token(params)
       .catch(function (reason) { return Promise.reject(reason); })
