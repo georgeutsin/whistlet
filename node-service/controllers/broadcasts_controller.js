@@ -4,16 +4,19 @@ var auth = require('../models/auth');
 var Ajv = require('ajv');
 var ajv = new Ajv({allErrors: true});
 
-var validateBroadcast = ajv.compile(broadcast.broadcastSchema);
+var validates = {};
+for (var schema in broadcast.schemas) {
+  validates[schema] = ajv.compile(broadcast.schemas[schema]);
+}
 var endpoints = broadcast.broadcastSchema.endpoints;
 
 module.exports = {
   create: function (req, res) {
     var params = _.pick(req.body, endpoints.create.permitted_fields);
-    var valid = validateBroadcast(params);
+    var valid = validates.create(params);
     if (!valid) {
       res.status(400);
-      return res.json({error: true, details: validateBroadcast.errors});
+      return res.json({error: true, details: validates.create.errors});
     } else if (!params.text && !params.metadata.images[0]) {
       res.status(400);
       return res.json({error: true, details: { message: 'Must have a broadcast or an image' }});
@@ -41,10 +44,10 @@ module.exports = {
 
   delete: function (req, res) {
     var params = _.pick(req.body, endpoints.delete.permitted_fields);
-    var valid = validateBroadcast(params);
+    var valid = validates.delete(params);
     if (!valid) {
       res.status(400);
-      return res.json({error: true, details: validateBroadcast.errors});
+      return res.json({error: true, details: validates.delete.errors});
     }
 
     auth.check_token(params)
@@ -69,6 +72,11 @@ module.exports = {
 
   explore: function (req, res) {
     var params = _.pick(req.query, endpoints.explore.permitted_fields);
+    var valid = validates.explore(params);
+    if (!valid) {
+      res.status(400);
+      return res.json({error: true, details: validates.explore.errors});
+    }
 
     auth.check_token(params)
       .catch(function (reason) { return Promise.reject(reason); })
@@ -89,6 +97,11 @@ module.exports = {
 
   home: function (req, res) {
     var params = _.pick(req.query, endpoints.home.permitted_fields);
+    var valid = validates.home(params);
+    if (!valid) {
+      res.status(400);
+      return res.json({error: true, details: validates.home.errors});
+    }
 
     auth.check_token(params)
       .catch(function (reason) { return Promise.reject(reason); })
@@ -109,6 +122,11 @@ module.exports = {
 
   profile: function (req, res) {
     var params = _.pick(req.query, endpoints.profile.permitted_fields);
+    var valid = validates.profile(params);
+    if (!valid) {
+      res.status(400);
+      return res.json({error: true, details: validates.profile.errors});
+    }
     // check that profile exists ***********LOL
     auth.check_token(params)
       .catch(function (reason) { return Promise.reject(reason); })
@@ -129,6 +147,11 @@ module.exports = {
 
   search: function (req, res) {
     var params = _.pick(req.query, endpoints.search.permitted_fields);
+    var valid = validates.search(params);
+    if (!valid) {
+      res.status(400);
+      return res.json({error: true, details: validates.search.errors});
+    }
 
     auth.check_token(params)
       .catch(function (reason) { return Promise.reject(reason); })
@@ -149,10 +172,10 @@ module.exports = {
 
   rebroadcast: function (req, res) {
     var params = _.pick(req.body, endpoints.rebroadcast.permitted_fields);
-    var valid = validateBroadcast(params);
+    var valid = validates.rebroadcast(params);
     if (!valid) {
       res.status(400);
-      return res.json({error: true, details: validateBroadcast.errors});
+      return res.json({error: true, details: validates.rebroadcast.errors});
     }
     // check if broadcast exists
 
@@ -177,10 +200,10 @@ module.exports = {
 
   unrebroadcast: function (req, res) {
     var params = _.pick(req.body, endpoints.unrebroadcast.permitted_fields);
-    var valid = validateBroadcast(params);
+    var valid = validates.unrebroadcast(params);
     if (!valid) {
       res.status(400);
-      return res.json({error: true, details: validateBroadcast.errors});
+      return res.json({error: true, details: validates.unrebroadcast.errors});
     }
     // check if broadcast exists
     auth.check_token(params)
