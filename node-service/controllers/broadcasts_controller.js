@@ -5,10 +5,11 @@ var Ajv = require('ajv');
 var ajv = new Ajv({allErrors: true});
 
 var validateBroadcast = ajv.compile(broadcast.broadcastSchema);
+var endpoints = broadcast.broadcastSchema.endpoints;
 
 module.exports = {
   create: function (req, res) {
-    var params = _.pick(req.body, 'token', 'text', 'metadata', 'reply_to');
+    var params = _.pick(req.body, endpoints.create.permitted_fields);
     var valid = validateBroadcast(params);
     if (!valid) {
       res.status(400);
@@ -39,7 +40,7 @@ module.exports = {
   },
 
   delete: function (req, res) {
-    var params = _.pick(req.body, 'token', 'id');
+    var params = _.pick(req.body, endpoints.delete.permitted_fields);
     var valid = validateBroadcast(params);
     if (!valid) {
       res.status(400);
@@ -67,7 +68,7 @@ module.exports = {
   },
 
   explore: function (req, res) {
-    var params = _.pick(req.query, 'token', 'order_date');
+    var params = _.pick(req.query, endpoints.explore.permitted_fields);
 
     auth.check_token(params)
       .catch(function (reason) { return Promise.reject(reason); })
@@ -87,7 +88,7 @@ module.exports = {
   },
 
   home: function (req, res) {
-    var params = _.pick(req.query, 'token', 'order_date');
+    var params = _.pick(req.query, endpoints.home.permitted_fields);
 
     auth.check_token(params)
       .catch(function (reason) { return Promise.reject(reason); })
@@ -107,7 +108,7 @@ module.exports = {
   },
 
   profile: function (req, res) {
-    var params = _.pick(req.query, 'token', 'order_date', 'id');
+    var params = _.pick(req.query, endpoints.profile.permitted_fields);
     // check that profile exists ***********LOL
     auth.check_token(params)
       .catch(function (reason) { return Promise.reject(reason); })
@@ -127,7 +128,7 @@ module.exports = {
   },
 
   search: function (req, res) {
-    var params = _.pick(req.query, 'token', 'order_date', 'search_query');
+    var params = _.pick(req.query, endpoints.search.permitted_fields);
 
     auth.check_token(params)
       .catch(function (reason) { return Promise.reject(reason); })
@@ -147,7 +148,7 @@ module.exports = {
   },
 
   rebroadcast: function (req, res) {
-    var params = _.pick(req.body, 'token', 'broadcast_id');
+    var params = _.pick(req.body, endpoints.rebroadcast.permitted_fields);
     var valid = validateBroadcast(params);
     if (!valid) {
       res.status(400);
@@ -175,7 +176,7 @@ module.exports = {
   },
 
   unrebroadcast: function (req, res) {
-    var params = _.pick(req.body, 'token', 'broadcast_id');
+    var params = _.pick(req.body, endpoints.unrebroadcast.permitted_fields);
     var valid = validateBroadcast(params);
     if (!valid) {
       res.status(400);

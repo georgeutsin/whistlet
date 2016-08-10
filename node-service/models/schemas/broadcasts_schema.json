@@ -31,5 +31,31 @@
       "minLength": 1,
       "maxLength": 5000
     }
+  },
+  "endpoints": {
+    "create":{
+      "permitted_fields": ["token", "text", "metadata", "reply_to"]
+    },
+    "delete": {
+      "permitted_fields": ["token", "id"]
+    },
+    "explore": {
+      "permitted_fields": ["token", "order_date"]
+    },
+    "home": {
+      "permitted_fields": ["token", "order_date"]
+    },
+    "profile": {
+      "permitted_fields": ["token", "order_date", "id"]
+    },
+    "search": {
+      "permitted_fields": ["token", "order_date", "search_query"]
+    },
+    "rebroadcast": {
+      "permitted_fields": ["token", "broadcast_id"]
+    },
+    "unrebroadcast": {
+      "permitted_fields": ["token", "broadcast_id"]
+    }
   }
 }
