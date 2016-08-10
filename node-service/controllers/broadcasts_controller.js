@@ -14,7 +14,7 @@ module.exports = {
     if (!valid) {
       res.status(400);
       return res.json({error: true, details: validateBroadcast.errors});
-    } else if (!params.text && !params.metadata) {
+    } else if (!params.text && !params.metadata.images[0]) {
       res.status(400);
       return res.json({error: true, details: { message: 'Must have a broadcast or an image' }});
     }
