@@ -133,7 +133,7 @@ describe('users_controller', () => {
   });
 
   it('cannot login with invalid credendtials', function (done) {
-    api.post('/users/login').send({user: testuser.email, password: 'wrong'})
+    api.post('/users/login').send({user: testuser.email, password: 'wrong12345'})
       .end(function (err, response) {
         assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
         assert.equal(response.status, 403);

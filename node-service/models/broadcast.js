@@ -6,7 +6,8 @@ function Broadcast () {
   this.broadcastSchema = require('./schemas/broadcasts_schema');
   this.schemas = {};
   for (var endpoint in this.broadcastSchema.endpoints) {
-    this.schemas[endpoint] = Object.assign({}, this.broadcastSchema, this.broadcastSchema.endpoints[endpoint]);
+    this.schemas[endpoint] = Object.assign({}, this.broadcastSchema,
+      { required: this.broadcastSchema.endpoints[endpoint].required_fields });
   }
   var broadcastObj = this;
   var select_broadcasts = `
