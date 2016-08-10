@@ -14,5 +14,22 @@
       "type": ["string", "integer"],
       "pattern": "^[1-9][0-9]*$"
     }
+  },
+  "endpoints" : {
+    "follow":{
+      "permitted_fields": ["token", "followed_id"]
+    },
+    "unfollow": {
+      "permitted_fields": ["token", "followed_id"]
+    },
+    "followers": {
+      "permitted_fields": ["token", "id", "last_date"]
+    },
+    "following": {
+      "permitted_fields": ["token", "id", "last_date"]
+    },
+    "broadcast_owner": {
+      "permitted_fields": ["broadcast_id", "rebroadcast_id", "token"]
+    }
   }
 }

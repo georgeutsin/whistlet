@@ -10,7 +10,7 @@ var endpoints = social.socialSchema.endpoints;
 
 module.exports = {
   follow: function (req, res) {
-    var params = _.pick(req.body, 'token', 'followed_id');
+    var params = _.pick(req.body, endpoints.follow.permitted_fields);
     var valid = validateSocial(params);
     if (!valid) {
       res.status(400);
@@ -36,7 +36,7 @@ module.exports = {
   },
 
   unfollow: function (req, res) {
-    var params = _.pick(req.body, 'token', 'followed_id');
+    var params = _.pick(req.body, endpoints.unfollow.permitted_fields);
     var valid = validateSocial(params);
     if (!valid) {
       res.status(400);
@@ -61,7 +61,7 @@ module.exports = {
   },
 
   followers: function (req, res) {
-    var params = _.pick(req.query, 'token', 'id', 'last_date');
+    var params = _.pick(req.query, endpoints.followers.permitted_fields);
     var valid = validateSocial(params);
     if (!valid) {
       res.status(400);
@@ -86,7 +86,7 @@ module.exports = {
   },
 
   following: function (req, res) {
-    var params = _.pick(req.query, 'token', 'id', 'last_date');
+    var params = _.pick(req.query, endpoints.following.permitted_fields);
     var valid = validateSocial(params);
     if (!valid) {
       res.status(400);
@@ -111,7 +111,7 @@ module.exports = {
   },
 
   broadcast_owner: function (req, res) {
-    var params = _.pick(req.query, 'broadcast_id', 'rebroadcast_id', 'token');
+    var params = _.pick(req.query, endpoints.broadcast_owner.permitted_fields);
 
     auth.check_token(params)
       .catch(function (reason) { return Promise.reject(reason); })
