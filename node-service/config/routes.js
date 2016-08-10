@@ -9,13 +9,14 @@ module.exports = {
     app.get('/users/exists', controllers.users.exists);
     app.post('/users/login', controllers.users.login);
     app.post('/users/logout', controllers.users.logout);
-    app.post('/users/follow', controllers.users.follow);
-    app.post('/users/unfollow', controllers.users.unfollow);
-    app.get('/users/followers', controllers.users.followers);
-    app.get('/users/following', controllers.users.following);
-    app.get('/users/broadcast_owner', controllers.users.broadcast_owner);
     app.get('/users/search', controllers.users.search);
     // app.post('/users/upload_image', controllers.users.upload_image)
+
+    app.post('/users/follow', controllers.social.follow);
+    app.post('/users/unfollow', controllers.social.unfollow);
+    app.get('/users/followers', controllers.social.followers);
+    app.get('/users/following', controllers.social.following);
+    app.get('/users/broadcast_owner', controllers.social.broadcast_owner);
     //
     app.post('/broadcasts', controllers.broadcasts.create);
     // app.post('/broadcasts/upload_image', controllers.broadcasts.upload_image)
