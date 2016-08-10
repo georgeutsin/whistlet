@@ -49,13 +49,13 @@ var teardownUser = function (cb) {
     });
 };
 
-describe('users_controller_social', () => {
+describe('social_controller', () => {
   it('setup', function (done) {
     async.series(arr_from_loop(setupUser, 2), done);
   });
 
   it('follow a user', function (done) {
-    api.post('/users/follow').send({
+    api.post('/social/follow').send({
       followed_id: testuserList[1].id,
       token: testuserList[0].token
     })
@@ -70,7 +70,7 @@ describe('users_controller_social', () => {
   });
 
   it('cannot follow a user twice', function (done) {
-    api.post('/users/follow').send({
+    api.post('/social/follow').send({
       followed_id: testuserList[1].id,
       token: testuserList[0].token
     })
@@ -83,7 +83,7 @@ describe('users_controller_social', () => {
   });
 
   it('get followers returns followers (user that was followed)', function (done) {
-    api.get('/users/followers?token=' + testuserList[1].token + '&id=' + testuserList[1].id)
+    api.get('/social/followers?token=' + testuserList[1].token + '&id=' + testuserList[1].id)
       .end(function (err, response) {
         assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
         assert.equal(response.status, 200);
@@ -95,7 +95,7 @@ describe('users_controller_social', () => {
   });
 
   it('get followers returns followers (user that followed)', function (done) {
-    api.get('/users/followers?token=' + testuserList[0].token + '&id=' + testuserList[1].id)
+    api.get('/social/followers?token=' + testuserList[0].token + '&id=' + testuserList[1].id)
       .end(function (err, response) {
         assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
         assert.equal(response.status, 200);
@@ -107,7 +107,7 @@ describe('users_controller_social', () => {
   });
 
   it('get following returns users followed (user that followed)', function (done) {
-    api.get('/users/following?token=' + testuserList[0].token + '&id=' + testuserList[0].id)
+    api.get('/social/following?token=' + testuserList[0].token + '&id=' + testuserList[0].id)
       .end(function (err, response) {
         assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
         assert.equal(response.status, 200);
@@ -119,7 +119,7 @@ describe('users_controller_social', () => {
   });
 
   it('get following returns users followed (user that was followed)', function (done) {
-    api.get('/users/following?token=' + testuserList[1].token + '&id=' + testuserList[0].id)
+    api.get('/social/following?token=' + testuserList[1].token + '&id=' + testuserList[0].id)
       .end(function (err, response) {
         assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
         assert.equal(response.status, 200);
@@ -131,7 +131,7 @@ describe('users_controller_social', () => {
   });
 
   it('follow a user back', function (done) {
-    api.post('/users/follow').send({
+    api.post('/social/follow').send({
       followed_id: testuserList[0].id,
       token: testuserList[1].token
     })
@@ -146,7 +146,7 @@ describe('users_controller_social', () => {
   });
 
   it('get followers returns followers (user that was followed)', function (done) {
-    api.get('/users/followers?token=' + testuserList[1].token + '&id=' + testuserList[1].id)
+    api.get('/social/followers?token=' + testuserList[1].token + '&id=' + testuserList[1].id)
       .end(function (err, response) {
         assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
         assert.equal(response.status, 200);
@@ -158,7 +158,7 @@ describe('users_controller_social', () => {
   });
 
   it('get following returns users followed (user that followed)', function (done) {
-    api.get('/users/following?token=' + testuserList[0].token + '&id=' + testuserList[0].id)
+    api.get('/social/following?token=' + testuserList[0].token + '&id=' + testuserList[0].id)
       .end(function (err, response) {
         assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
         assert.equal(response.status, 200);
@@ -170,7 +170,7 @@ describe('users_controller_social', () => {
   });
 
   it('get following returns users followed (user that was followed)', function (done) {
-    api.get('/users/following?token=' + testuserList[1].token + '&id=' + testuserList[0].id)
+    api.get('/social/following?token=' + testuserList[1].token + '&id=' + testuserList[0].id)
       .end(function (err, response) {
         assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
         assert.equal(response.status, 200);
@@ -182,7 +182,7 @@ describe('users_controller_social', () => {
   });
 
   it('unfollow a user', function (done) {
-    api.post('/users/unfollow').send({
+    api.post('/social/unfollow').send({
       followed_id: testuserList[1].id,
       token: testuserList[0].token
     })
@@ -197,7 +197,7 @@ describe('users_controller_social', () => {
   });
 
   it('cannot unfollow a user twice', function (done) {
-    api.post('/users/unfollow').send({
+    api.post('/social/unfollow').send({
       followed_id: testuserList[1].id,
       token: testuserList[0].token
     })

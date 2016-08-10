@@ -12,11 +12,11 @@ module.exports = {
     app.get('/users/search', controllers.users.search);
     // app.post('/users/upload_image', controllers.users.upload_image)
 
-    app.post('/users/follow', controllers.social.follow);
-    app.post('/users/unfollow', controllers.social.unfollow);
-    app.get('/users/followers', controllers.social.followers);
-    app.get('/users/following', controllers.social.following);
-    app.get('/users/broadcast_owner', controllers.social.broadcast_owner);
+    app.post('/social/follow', controllers.social.follow);
+    app.post('/social/unfollow', controllers.social.unfollow);
+    app.get('/social/followers', controllers.social.followers);
+    app.get('/social/following', controllers.social.following);
+    app.get('/social/broadcast_owner', controllers.social.broadcast_owner);
     //
     app.post('/broadcasts', controllers.broadcasts.create);
     // app.post('/broadcasts/upload_image', controllers.broadcasts.upload_image)

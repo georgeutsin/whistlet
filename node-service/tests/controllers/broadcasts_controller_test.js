@@ -241,7 +241,7 @@ describe('broadcasts_controller', () => {
   });
 
   it('get broadcast_owner', function (done) {
-    api.get('/users/broadcast_owner?token=' + testuserList[1].token + '&broadcast_id=' + broadcastList[0].id)
+    api.get('/social/broadcast_owner?token=' + testuserList[1].token + '&broadcast_id=' + broadcastList[0].id)
       .end(function (err, response) {
         assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
         assert.equal(response.status, 200);
