@@ -260,6 +260,15 @@ describe('broadcasts_controller', () => {
       });
   });
 
+  it('cannnot delete a broadcast that does not exist', function (done) {
+    api.delete('/broadcasts').send({token: testuserList[0].token, id: broadcastList[0].id})
+      .end(function (err, response) {
+        assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
+        assert.equal(response.status, 404);
+        done();
+      });
+  });
+
   it('teardown', function (done) {
     async.series(arr_from_loop(teardownUser, 2), done);
   });

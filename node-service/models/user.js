@@ -89,11 +89,14 @@ function User () {
         if (err) {
           reject({'error': true, 'status': 400, 'details': [{'message': 'Error: ' + err.code}]});
         } else {
-          output = result[0];
-          output.follows_you = (output.follows_you && output.follows_you > 0) ? true : false;
-          output.did_follow = (output.did_follow && output.did_follow > 0) ? true : false;
-
-          resolve({'error': false, 'status': 200, 'user': output});
+          if (result[0]) {
+            output = result[0];
+            output.follows_you = (output.follows_you && output.follows_you > 0) ? true : false;
+            output.did_follow = (output.did_follow && output.did_follow > 0) ? true : false;
+            resolve({'error': false, 'status': 200, 'user': output});
+          } else {
+            reject({'error': true, 'status': 404, 'details': [{'message': 'Error: user not found'}]});
+          }
         }
       });
     });

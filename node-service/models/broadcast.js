@@ -60,7 +60,11 @@ function Broadcast () {
         if (err) {
           reject({'error': true, 'status': 400, 'details': [{'message': 'Error: ' + err.code}]});
         } else {
-          resolve({'error': false, 'status': 200, 'broadcast': result[0]});
+          if (result[0]) {
+            resolve({'error': false, 'status': 200, 'broadcast': result[0]});
+          } else {
+            reject({'error': true, 'status': 404, 'details': [{'message': 'Error: broadcast not found'}]});
+          }
         }
       });
     });
