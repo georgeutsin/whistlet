@@ -13,6 +13,7 @@ var endpoints = broadcast.broadcastSchema.endpoints;
 module.exports = {
   create: function (req, res) {
     var params = _.pick(req.body, endpoints.create.permitted_fields);
+    params.token = req.body.token || req.query.token || req.headers['x-access-token'];
     var valid = validates.create(params);
     if (!valid) {
       res.status(400);
@@ -44,6 +45,7 @@ module.exports = {
 
   delete: function (req, res) {
     var params = _.pick(req.body, endpoints.delete.permitted_fields);
+    params.token = req.body.token || req.query.token || req.headers['x-access-token'];
     var valid = validates.delete(params);
     if (!valid) {
       res.status(400);
@@ -72,6 +74,7 @@ module.exports = {
 
   explore: function (req, res) {
     var params = _.pick(req.query, endpoints.explore.permitted_fields);
+    params.token = req.body.token || req.query.token || req.headers['x-access-token'];
     var valid = validates.explore(params);
     if (!valid) {
       res.status(400);
@@ -97,6 +100,7 @@ module.exports = {
 
   home: function (req, res) {
     var params = _.pick(req.query, endpoints.home.permitted_fields);
+    params.token = req.body.token || req.query.token || req.headers['x-access-token'];
     var valid = validates.home(params);
     if (!valid) {
       res.status(400);
@@ -122,6 +126,7 @@ module.exports = {
 
   profile: function (req, res) {
     var params = _.pick(req.query, endpoints.profile.permitted_fields);
+    params.token = req.body.token || req.query.token || req.headers['x-access-token'];
     var valid = validates.profile(params);
     if (!valid) {
       res.status(400);
@@ -147,6 +152,7 @@ module.exports = {
 
   search: function (req, res) {
     var params = _.pick(req.query, endpoints.search.permitted_fields);
+    params.token = req.body.token || req.query.token || req.headers['x-access-token'];
     var valid = validates.search(params);
     if (!valid) {
       res.status(400);
@@ -172,6 +178,7 @@ module.exports = {
 
   rebroadcast: function (req, res) {
     var params = _.pick(req.body, endpoints.rebroadcast.permitted_fields);
+    params.token = req.body.token || req.query.token || req.headers['x-access-token'];
     var valid = validates.rebroadcast(params);
     if (!valid) {
       res.status(400);
@@ -200,6 +207,7 @@ module.exports = {
 
   unrebroadcast: function (req, res) {
     var params = _.pick(req.body, endpoints.unrebroadcast.permitted_fields);
+    params.token = req.body.token || req.query.token || req.headers['x-access-token'];
     var valid = validates.unrebroadcast(params);
     if (!valid) {
       res.status(400);

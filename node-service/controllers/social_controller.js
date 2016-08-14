@@ -13,6 +13,7 @@ var endpoints = social.socialSchema.endpoints;
 module.exports = {
   follow: function (req, res) {
     var params = _.pick(req.body, endpoints.follow.permitted_fields);
+    params.token = req.body.token || req.query.token || req.headers['x-access-token'];
     var valid = validates.follow(params);
     if (!valid) {
       res.status(400);
@@ -39,6 +40,7 @@ module.exports = {
 
   unfollow: function (req, res) {
     var params = _.pick(req.body, endpoints.unfollow.permitted_fields);
+    params.token = req.body.token || req.query.token || req.headers['x-access-token'];
     var valid = validates.unfollow(params);
     if (!valid) {
       res.status(400);
@@ -64,6 +66,7 @@ module.exports = {
 
   followers: function (req, res) {
     var params = _.pick(req.query, endpoints.followers.permitted_fields);
+    params.token = req.body.token || req.query.token || req.headers['x-access-token'];
     var valid = validates.followers(params);
     if (!valid) {
       res.status(400);
@@ -89,6 +92,7 @@ module.exports = {
 
   following: function (req, res) {
     var params = _.pick(req.query, endpoints.following.permitted_fields);
+    params.token = req.body.token || req.query.token || req.headers['x-access-token'];
     var valid = validates.following(params);
     if (!valid) {
       res.status(400);
@@ -114,6 +118,7 @@ module.exports = {
 
   broadcast_owner: function (req, res) {
     var params = _.pick(req.query, endpoints.broadcast_owner.permitted_fields);
+    params.token = req.body.token || req.query.token || req.headers['x-access-token'];
     var valid = validates.broadcast_owner(params);
     if (!valid) {
       res.status(400);

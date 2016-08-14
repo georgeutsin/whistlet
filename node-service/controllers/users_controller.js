@@ -32,6 +32,7 @@ module.exports = {
 
   get: function (req, res) {
     var params = _.pick(req.query, endpoints.get.permitted_fields);
+    params.token = req.body.token || req.query.token || req.headers['x-access-token'];
     var valid = validates.get(params);
     if (!valid) {
       res.status(400);
@@ -68,6 +69,7 @@ module.exports = {
 
   update: function (req, res) {
     var params = _.pick(req.body, endpoints.update.permitted_fields);
+    params.token = req.body.token || req.query.token || req.headers['x-access-token'];
     var valid = validates.update(params);
     if (!valid) {
       res.status(400);
@@ -93,6 +95,7 @@ module.exports = {
 
   delete: function (req, res) {
     var params = _.pick(req.body, endpoints.delete.permitted_fields);
+    params.token = req.body.token || req.query.token || req.headers['x-access-token'];
     var valid = validates.delete(params);
     if (!valid) {
       res.status(400);
@@ -187,6 +190,7 @@ module.exports = {
 
   logout: function (req, res) {
     var params = _.pick(req.body, endpoints.logout.permitted_fields);
+    params.token = req.body.token || req.query.token || req.headers['x-access-token'];
     var valid = validates.logout(params);
     if (!valid) {
       res.status(400);
@@ -206,6 +210,7 @@ module.exports = {
 
   search: function (req, res) {
     var params = _.pick(req.query, endpoints.search.permitted_fields);
+    params.token = req.body.token || req.query.token || req.headers['x-access-token'];
     var valid = validates.search(params);
     if (!valid) {
       res.status(400);
