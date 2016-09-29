@@ -165,7 +165,7 @@ CREATE TABLE `users` (
   `name` varchar(128) DEFAULT NULL,
   `password` varchar(128) NOT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` datetime DEFAULT NULL,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `email` varchar(128) NOT NULL,
   `avatar_hash` varchar(64) DEFAULT NULL,
   `salt` varchar(64) DEFAULT NULL,
@@ -177,7 +177,10 @@ CREATE TABLE `users` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
-INSERT INTO users (username, email) VALUES ('testuser1', 'abc@email.com');
+INSERT INTO `users` (`id`, `username`, `name`, `password`, `created_at`, `updated_at`, `email`, `avatar_hash`, `salt`, `amp`)
+VALUES
+	(1, 'testuser1', 'Ayy lmao', 'b6d930cd92a68847a9b9f73f2a3ddb39b5d225ea156e3f842da62f8e48f60c32fecd90f159d8eab5aac6a7b393f81d4e0c1cd9ca524ba51c7cdf431c215eb761', '2016-09-29 14:54:06', NULL, 'abc@email.com', 'c413ddcc2c68111bd23f025bd6ea8158', '45c8570cbae97001f88df344e8a71e17a98a45105ada4202c8660f339d8267e3', 0);
+
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
