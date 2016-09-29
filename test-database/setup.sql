@@ -24,7 +24,7 @@ DROP TABLE IF EXISTS `auth_tokens`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `auth_tokens` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `token` varchar(64) NOT NULL,
+  `token` varchar(128) NOT NULL,
   `user_id` bigint(20) DEFAULT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`,`token`)
@@ -58,7 +58,7 @@ CREATE TABLE `broadcasts` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `user_id` bigint(20) NOT NULL,
   `text` varchar(1024) DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `metadata` blob,
   `reply_to` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`,`user_id`)
@@ -163,18 +163,21 @@ CREATE TABLE `users` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `username` varchar(128) NOT NULL,
   `name` varchar(128) DEFAULT NULL,
-  `password` varchar(64) NOT NULL,
+  `password` varchar(128) NOT NULL,
   `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   `updated_at` datetime DEFAULT NULL,
   `email` varchar(128) NOT NULL,
   `avatar_hash` varchar(64) DEFAULT NULL,
-  `salt` varchar(32) DEFAULT NULL,
+  `salt` varchar(64) DEFAULT NULL,
+  `amp` int(11) DEFAULT 0,
   PRIMARY KEY (`id`,`username`),
   UNIQUE KEY `email_UNIQUE` (`email`),
   UNIQUE KEY `username_UNIQUE` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+INSERT INTO users (username, email) VALUES ('testuser1', 'abc@email.com');
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

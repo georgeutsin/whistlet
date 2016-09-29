@@ -273,13 +273,13 @@ describe('users_controller', () => {
       });
   });
 
-  it('delete a user', function (done) {
-    api.delete('/users').send({token: cur_token})
-      .end(function (err, response) {
-        assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
-        assert.equal(response.status, 200);
-        assert.equal(response.body.user.id, cur_user_id);
-        done();
-      });
-  });
+// it('delete a user', function (done) {
+//   api.delete('/users').send({token: cur_token})
+//     .end(function (err, response) {
+//       assert.equal(response.header['content-type'], 'application/json; charset=utf-8')
+//       assert.equal(response.status, 200)
+//       assert.equal(response.body.user.id, cur_user_id)
+//       done()
+//     })
+// })
 });

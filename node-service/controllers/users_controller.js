@@ -76,20 +76,34 @@ module.exports = {
       return res.json({error: true, details: validates.update.errors});
     }
 
-    auth.check_token(params)
+    user.details_for_user(params)
       .catch(function (reason) { return Promise.reject(reason); })
-      .then(function (cur_user) {
-        params.id = cur_user.id;
-        return user.update(params);
-      })
-      .catch(function (reason) { return Promise.reject(reason); })
-      .then(function (user_result) {
-        res.status(user_result.status);
-        return res.json(user_result);
+      .then(function (target_user) {
+        output = {error: true, status: 400, user_exists: true};
+        res.status(output.status);
+        return res.json(output);
       })
       .catch(function (reason) {
-        res.status(reason.status);
-        return res.json(reason);
+        if (reason.status != 404) {
+          res.status(reason.status);
+          return res.json(reason);
+        } else {
+          auth.check_token(params)
+            .catch(function (reason) { return Promise.reject(reason); })
+            .then(function (cur_user) {
+              params.id = cur_user.id;
+              return user.update(params);
+            })
+            .catch(function (reason) { return Promise.reject(reason); })
+            .then(function (user_result) {
+              res.status(user_result.status);
+              return res.json(user_result);
+            })
+            .catch(function (reason) {
+              res.status(reason.status);
+              return res.json(reason);
+            });
+        }
       });
   },
 
@@ -167,11 +181,13 @@ module.exports = {
       params.email = '';
     }
 
+
     user.details_for_user(params)
       .catch(function (reason) { return Promise.reject(reason); })
       .then(function (target_user) {
         params.salt = target_user.salt;
         params.id = target_user.id;
+        console.log(params);
         return user.check_user(params);
       })
       .catch(function (reason) { return Promise.reject(reason); })
