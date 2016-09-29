@@ -6,6 +6,7 @@ var fs = require('fs');
 
 var connection = require('./models');
 var routes = require('./config/routes');
+var config = require('./config');
 
 module.exports.start = function (done) {
   var app = express();
@@ -45,7 +46,7 @@ module.exports.start = function (done) {
   routes.configure(router);
   app.use('/v1', router);
 
-  var server = app.listen(3000, function () {
+  var server = app.listen(config.port, function () {
     console.log('Server listening on port ' + server.address().port);
 
     var allRoutes = router.stack.map(function (obj) {

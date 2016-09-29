@@ -4,7 +4,9 @@
   "version": "0.0.1",
   "license": "MIT",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "nodemon",
+    "test": "mocha tests/controllers"
   },
   "dependencies": {
     "ajv": "^4.1.7",
@@ -17,6 +19,8 @@
   "devDependencies": {
     "assert": "^1.4.1",
     "async": "^2.0.0",
+    "mocha": "^3.1.0",
+    "nodemon": "^1.10.2",
     "supertest": "^1.2.0"
   }
 }
