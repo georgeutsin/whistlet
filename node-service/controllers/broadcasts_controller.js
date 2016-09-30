@@ -15,12 +15,16 @@ module.exports = {
     var params = _.pick(req.body, endpoints.create.permitted_fields);
     params.token = req.body.token || req.query.token || req.headers['x-access-token'];
     var valid = validates.create(params);
+    var broadcastApparentLength = this.charCountWithoutEmojis(params.text);
     if (!valid) {
       res.status(400);
       return res.json({error: true, details: validates.create.errors});
     } else if (!params.text && !params.metadata.images[0]) {
       res.status(400);
       return res.json({error: true, details: { message: 'Must have a broadcast or an image' }});
+    } else if (broadcastApparentLength > 210) {
+      res.status(400);
+      return res.json({error: true, details: { message: 'Must be 210 characters or less' }});
     }
 
     auth.check_token(params)
@@ -230,6 +234,12 @@ module.exports = {
         res.status(reason.status);
         return res.json(reason);
       });
+  },
+
+  charCountWithoutEmojis: function (text) {
+    var re = /:([^\s-]*?):/g;
+    var matches = text.match(re) || [];
+    return text.length - matches.join('').length + matches.length;
   }
 
 };

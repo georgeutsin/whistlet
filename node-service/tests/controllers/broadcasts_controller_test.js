@@ -3,6 +3,7 @@
 var assert = require('assert');
 var supertest = require('supertest');
 var async = require('async');
+var broadcasts_controller = require('../../controllers/broadcasts_controller.js');
 
 var api = supertest('http://localhost:3000/v1');
 
@@ -50,6 +51,36 @@ var teardownUser = function (cb) {
       cb();
     });
 };
+
+describe('broadcasts_controller_char_count', () => {
+  it('charCount function works on text without emojis', function () {
+    assert.equal(5, broadcasts_controller.charCountWithoutEmojis('chars'));
+  });
+
+  it('charCount function works on text with only an emoji', function () {
+    assert.equal(1, broadcasts_controller.charCountWithoutEmojis(':emoji:'));
+  });
+
+  it('charCount function works on text with multiple emojis', function () {
+    assert.equal(10, broadcasts_controller.charCountWithoutEmojis('text and :emoji:'));
+  });
+
+  it('charCount function works on an empty string', function () {
+    assert.equal(0, broadcasts_controller.charCountWithoutEmojis(''));
+  });
+
+  it('charCount function does not pick up on single colons', function () {
+    assert.equal(6, broadcasts_controller.charCountWithoutEmojis('chars:'));
+  });
+
+  it('charCount function does does not consider whitespace between colons to be an emoji', function () {
+    assert.equal(14, broadcasts_controller.charCountWithoutEmojis('foo : bar: foo'));
+  });
+
+  it('charCount function does does not consider colons without a pair to be an emoji', function () {
+    assert.equal(9, broadcasts_controller.charCountWithoutEmojis('foo :foo:bar:'));
+  });
+});
 
 describe('broadcasts_controller', () => {
   it('setup', function (done) {

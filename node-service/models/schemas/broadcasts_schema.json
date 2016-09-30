@@ -23,7 +23,7 @@
       "description": "min length of 1 chars, max length of 210 chars",
       "type": "string",
       "minLength": 1,
-      "maxLength": 210
+      "maxLength": 1024
     },
     "metadata": {
       "description": "max length of 5000 chars",
