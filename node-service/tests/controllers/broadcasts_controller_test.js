@@ -97,6 +97,11 @@ describe('broadcasts_controller', () => {
         assert.equal(response.status, 201);
         assert.equal(response.body.broadcast.text, 'My broadcast text');
         assert.equal(response.body.broadcast.user_id, undefined); // make sure user_id isn't serialized
+        assert.equal(response.body.broadcast.rebroadcast_count, 0);
+        assert.equal(response.body.broadcast.did_rebroadcast, false);
+        assert.equal(response.body.broadcast.is_rebroadcast, false);
+        assert.equal(response.body.broadcast.is_own_broadcast, true);
+        assert.equal(response.body.broadcast.rebroadcast_id, 0);
         broadcastList.push(response.body.broadcast);
         done();
       });

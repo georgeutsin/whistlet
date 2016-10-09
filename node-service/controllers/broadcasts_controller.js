@@ -10,12 +10,18 @@ for (var schema in broadcast.schemas) {
 }
 var endpoints = broadcast.broadcastSchema.endpoints;
 
+var charCountWithoutEmojis = function (text) {
+  var re = /:([^\s-]*?):/g;
+  var matches = text.match(re) || [];
+  return text.length - matches.join('').length + matches.length;
+};
+
 module.exports = {
   create: function (req, res) {
     var params = _.pick(req.body, endpoints.create.permitted_fields);
     params.token = req.body.token || req.query.token || req.headers['x-access-token'];
     var valid = validates.create(params);
-    var broadcastApparentLength = this.charCountWithoutEmojis(params.text);
+    var broadcastApparentLength = charCountWithoutEmojis(params.text);
     if (!valid) {
       res.status(400);
       return res.json({error: true, details: validates.create.errors});
@@ -38,7 +44,13 @@ module.exports = {
       .then(function (result) {
         res.status(201);
         result.status = 201;
-        result.broadcast = _.pick(result.broadcast, 'id', 'text', 'created_at', 'metadata');
+        result.broadcast = _.pick(result.broadcast, 'id', 'text', 'created_at', 'metadata', 'reply_to');
+        result.broadcast.order_date = result.broadcast.created_at;
+        result.broadcast.rebroadcast_count = 0;
+        result.broadcast.rebroadcast_id = 0;
+        result.broadcast.did_rebroadcast = false;
+        result.broadcast.is_own_broadcast = true;
+        result.broadcast.is_rebroadcast = false;
         return res.json(result);
       })
       .catch(function (reason) {
@@ -236,10 +248,6 @@ module.exports = {
       });
   },
 
-  charCountWithoutEmojis: function (text) {
-    var re = /:([^\s-]*?):/g;
-    var matches = text.match(re) || [];
-    return text.length - matches.join('').length + matches.length;
-  }
+  charCountWithoutEmojis: charCountWithoutEmojis
 
 };
