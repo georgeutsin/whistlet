@@ -168,7 +168,6 @@ module.exports = {
     var valid = validates.login(input);
     if (!valid) {
       res.status(400);
-      console.log(validates.login.errors);
       return res.json({error: true, details: validates.login.errors});
     }
 
@@ -181,13 +180,11 @@ module.exports = {
       params.email = '';
     }
 
-
     user.details_for_user(params)
       .catch(function (reason) { return Promise.reject(reason); })
       .then(function (target_user) {
         params.salt = target_user.salt;
         params.id = target_user.id;
-        console.log(params);
         return user.check_user(params);
       })
       .catch(function (reason) { return Promise.reject(reason); })
