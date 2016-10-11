@@ -250,7 +250,7 @@ module.exports = {
       });
   },
 
-  upload_signature: function (req, res) {
+  signed_upload_url: function (req, res) {
     var params = _.pick(req.query, endpoints.upload_signature.permitted_fields);
     params.token = req.body.token || req.query.token || req.headers['x-access-token'];
     var valid = validates.upload_signature(params);
@@ -263,45 +263,23 @@ module.exports = {
     const s3 = new aws.S3();
     s3.AWS_ACCESS_KEY_ID = 'AKIAJ3AKROMEHJVF24KQ';
     s3.AWS_SECRET_ACCESS_KEY = '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';
-    const fileName = params.file_name;
-    const fileType = params.file_type;
-    const s3Params = {
-      Bucket: config.S3_BUCKET,
-      Key: fileName,
-      Expires: 60,
-      ContentType: fileType,
-      ACL: 'public-read'
-    };
+    var s3params = {Bucket: 'whistlet-bucket', Key: params.file_name};
 
     auth.check_token(params)
       .catch(function (reason) { return Promise.reject(reason); })
       .then(function (cur_user) {
-        console.log('a');
-
-        return new Promise(function (resolve, reject) {
-          console.lod('d');
-          s3.getSignedURL('getObject', s3Params, function (err, data) {
-            console.log('e');
-            if (err) {
-              err.status = 400;
-              reject(err);
-            }
-            console.log('b');
-
-            const returnData = {
-              signedRequest: data,
-              url: `https://${S3_BUCKET}.s3.amazonaws.com/${fileName}`
-            };
-            console.log('c');
-
-            resolve(returnData);
-          });
+        s3.getSignedUrl('putObject', s3params, (err, data) => {
+          if (err) {
+            console.log(err);
+            return res.end();
+          }
+          const returnData = {
+            error: false,
+            status: 200,
+            signedRequest: data
+          };
+          return res.json(returnData);
         });
-      })
-      .catch(function (reason) { return Promise.reject(reason); })
-      .then(function (result) {
-        console.log('asdf');
-        return res.json(result);
       })
       .catch(function (reason) {
         res.status(reason.status);
