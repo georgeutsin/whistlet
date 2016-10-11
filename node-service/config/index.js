@@ -11,5 +11,6 @@ module.exports = {
     database: 'whistlet',
     debug: false,
     port: 3306
-  }
+  },
+  S3_BUCKET: process.env.S3_BUCKET || 'whistlet-bucket'
 };

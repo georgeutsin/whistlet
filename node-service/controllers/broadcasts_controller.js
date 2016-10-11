@@ -3,6 +3,8 @@ var broadcast = require('../models/broadcast');
 var auth = require('../models/auth');
 var Ajv = require('ajv');
 var ajv = new Ajv({allErrors: true});
+var config = require('../config');
+var aws = require('aws-sdk');
 
 var validates = {};
 for (var schema in broadcast.schemas) {
@@ -241,6 +243,65 @@ module.exports = {
         res.status(broadcast_result.status);
         broadcast_result.broadcast = _.pick(broadcast_result.broadcast, 'id', 'text', 'created_at', 'metadata');
         return res.json(broadcast_result);
+      })
+      .catch(function (reason) {
+        res.status(reason.status);
+        return res.json(reason);
+      });
+  },
+
+  upload_signature: function (req, res) {
+    var params = _.pick(req.query, endpoints.upload_signature.permitted_fields);
+    params.token = req.body.token || req.query.token || req.headers['x-access-token'];
+    var valid = validates.upload_signature(params);
+
+    if (!valid) {
+      res.status(400);
+      return res.json({error: true, details: validates.upload_signature.errors});
+    }
+
+    const s3 = new aws.S3();
+    s3.AWS_ACCESS_KEY_ID = 'AKIAJ3AKROMEHJVF24KQ';
+    s3.AWS_SECRET_ACCESS_KEY = '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';
+    const fileName = params.file_name;
+    const fileType = params.file_type;
+    const s3Params = {
+      Bucket: config.S3_BUCKET,
+      Key: fileName,
+      Expires: 60,
+      ContentType: fileType,
+      ACL: 'public-read'
+    };
+
+    auth.check_token(params)
+      .catch(function (reason) { return Promise.reject(reason); })
+      .then(function (cur_user) {
+        console.log('a');
+
+        return new Promise(function (resolve, reject) {
+          console.lod('d');
+          s3.getSignedURL('getObject', s3Params, function (err, data) {
+            console.log('e');
+            if (err) {
+              err.status = 400;
+              reject(err);
+            }
+            console.log('b');
+
+            const returnData = {
+              signedRequest: data,
+              url: `https://${S3_BUCKET}.s3.amazonaws.com/${fileName}`
+            };
+            console.log('c');
+
+            resolve(returnData);
+          });
+        });
+      })
+      .catch(function (reason) { return Promise.reject(reason); })
+      .then(function (result) {
+        console.log('asdf');
+        return res.json(result);
       })
       .catch(function (reason) {
         res.status(reason.status);
