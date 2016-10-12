@@ -5,6 +5,7 @@ var Ajv = require('ajv');
 var ajv = new Ajv({allErrors: true});
 var config = require('../config');
 var aws = require('aws-sdk');
+const crypto = require('crypto');
 
 var validates = {};
 for (var schema in broadcast.schemas) {
@@ -251,32 +252,32 @@ module.exports = {
   },
 
   signed_upload_url: function (req, res) {
-    var params = _.pick(req.query, endpoints.upload_signature.permitted_fields);
+    var params = _.pick(req.query, endpoints.signed_upload_url.permitted_fields);
     params.token = req.body.token || req.query.token || req.headers['x-access-token'];
-    var valid = validates.upload_signature(params);
+    var valid = validates.signed_upload_url(params);
 
     if (!valid) {
       res.status(400);
-      return res.json({error: true, details: validates.upload_signature.errors});
+      return res.json({error: true, details: validates.signed_upload_url.errors});
     }
 
     const s3 = new aws.S3();
-    s3.AWS_ACCESS_KEY_ID = 'AKIAJ3AKROMEHJVF24KQ';
-    s3.AWS_SECRET_ACCESS_KEY = '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';
-    var s3params = {Bucket: 'whistlet-bucket', Key: params.file_name};
+    params.file_name = crypto.randomBytes(32).toString('hex') + params.file_name;
+    var s3params = {Bucket: config.s3_broadcast_image_bucket, Key: params.file_name};
 
     auth.check_token(params)
       .catch(function (reason) { return Promise.reject(reason); })
       .then(function (cur_user) {
         s3.getSignedUrl('putObject', s3params, (err, data) => {
           if (err) {
-            console.log(err);
-            return res.end();
+            err.status = 400;
+            return Promise.reject(err);
           }
           const returnData = {
             error: false,
             status: 200,
-            signedRequest: data
+            signedRequest: data,
+            url: `https://${config.s3_broadcast_image_bucket}.s3.amazonaws.com/${params.file_name}`
           };
           return res.json(returnData);
         });

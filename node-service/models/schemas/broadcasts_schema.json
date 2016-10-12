@@ -88,9 +88,9 @@
       "permitted_fields": ["token", "broadcast_id"],
       "required_fields": ["token", "broadcast_id"]
     },
-    "upload_signature": {
-      "permitted_fields": ["token", "file_name", "file_type"],
-      "required_fields": ["token", "file_name", "file_type"]
+    "signed_upload_url": {
+      "permitted_fields": ["token", "file_name"],
+      "required_fields": ["token", "file_name"]
     }
   }
 }
