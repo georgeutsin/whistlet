@@ -3,6 +3,9 @@ var broadcast = require('../models/broadcast');
 var auth = require('../models/auth');
 var Ajv = require('ajv');
 var ajv = new Ajv({allErrors: true});
+var config = require('../config');
+var aws = require('aws-sdk');
+const crypto = require('crypto');
 
 var validates = {};
 for (var schema in broadcast.schemas) {
@@ -241,6 +244,43 @@ module.exports = {
         res.status(broadcast_result.status);
         broadcast_result.broadcast = _.pick(broadcast_result.broadcast, 'id', 'text', 'created_at', 'metadata');
         return res.json(broadcast_result);
+      })
+      .catch(function (reason) {
+        res.status(reason.status);
+        return res.json(reason);
+      });
+  },
+
+  signed_upload_url: function (req, res) {
+    var params = _.pick(req.query, endpoints.signed_upload_url.permitted_fields);
+    params.token = req.body.token || req.query.token || req.headers['x-access-token'];
+    var valid = validates.signed_upload_url(params);
+
+    if (!valid) {
+      res.status(400);
+      return res.json({error: true, details: validates.signed_upload_url.errors});
+    }
+
+    const s3 = new aws.S3();
+    params.file_name = crypto.randomBytes(32).toString('hex') + params.file_name;
+    var s3params = {Bucket: config.s3_broadcast_image_bucket, Key: params.file_name};
+
+    auth.check_token(params)
+      .catch(function (reason) { return Promise.reject(reason); })
+      .then(function (cur_user) {
+        s3.getSignedUrl('putObject', s3params, (err, data) => {
+          if (err) {
+            err.status = 400;
+            return Promise.reject(err);
+          }
+          const returnData = {
+            error: false,
+            status: 200,
+            signedRequest: data,
+            url: `https://${config.s3_broadcast_image_bucket}.s3.amazonaws.com/${params.file_name}`
+          };
+          return res.json(returnData);
+        });
       })
       .catch(function (reason) {
         res.status(reason.status);

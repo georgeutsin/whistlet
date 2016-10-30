@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "license": "MIT",
   "scripts": {
-    "start": "node server.js",
+    "start": "source env.sh; node server.js",
     "dev": "nodemon",
     "test": "mocha tests/controllers"
   },
@@ -14,7 +14,8 @@
     "express": "~4.12.2",
     "lodash": "^4.13.1",
     "morgan": "^1.7.0",
-    "mysql": "~2.5.5"
+    "mysql": "~2.5.5",
+    "aws-sdk": "2.x"
   },
   "devDependencies": {
     "assert": "^1.4.1",

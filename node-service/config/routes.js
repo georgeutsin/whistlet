@@ -19,7 +19,7 @@ module.exports = {
     app.get('/social/broadcast_owner', controllers.social.broadcast_owner);
     //
     app.post('/broadcasts', controllers.broadcasts.create);
-    // app.post('/broadcasts/upload_image', controllers.broadcasts.upload_image)
+    app.get('/broadcasts/signed_upload_url', controllers.broadcasts.signed_upload_url);
     app.delete('/broadcasts', controllers.broadcasts.delete);
     app.get('/broadcasts/home', controllers.broadcasts.home);
     app.get('/broadcasts/explore', controllers.broadcasts.explore);

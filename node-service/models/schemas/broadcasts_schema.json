@@ -43,6 +43,16 @@
       "description": "string to search broadcasts by, max 128 chars",
       "type": "string",
       "maxLength": 128
+    },
+    "file_name": {
+      "description": "name of the file",
+      "type": "string",
+      "maxLength": 128
+    },
+    "file_type": {
+      "description": "type of the file",
+      "type": "string",
+      "maxLength": 128
     }
   },
   "endpoints": {
@@ -77,6 +87,10 @@
     "unrebroadcast": {
       "permitted_fields": ["token", "broadcast_id"],
       "required_fields": ["token", "broadcast_id"]
+    },
+    "signed_upload_url": {
+      "permitted_fields": ["token", "file_name"],
+      "required_fields": ["token", "file_name"]
     }
   }
 }

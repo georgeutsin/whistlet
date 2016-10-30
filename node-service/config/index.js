@@ -11,5 +11,6 @@ module.exports = {
     database: 'whistlet',
     debug: false,
     port: 3306
-  }
+  },
+  s3_broadcast_image_bucket: 'whistbci'
 };
