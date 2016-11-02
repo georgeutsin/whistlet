@@ -57,7 +57,4 @@ module.exports.start = function (done) {
   });
 };
 
-// If someone ran: "node server.js" then automatically start the server
-if (path.basename(process.argv[1], '.js') == path.basename(__filename, '.js')) {
-  module.exports.start();
-}
+module.exports.start();

@@ -3,8 +3,9 @@
 var assert = require('assert');
 var supertest = require('supertest');
 var async = require('async');
+var config = require('../../config');
 
-var api = supertest('http://localhost:3000/v1');
+var api = supertest('http://localhost:'+config.port+'/v1');
 
 function Testuser () {
   this.username = 'testuser' + Date.now();
