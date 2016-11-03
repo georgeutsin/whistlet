@@ -6,9 +6,9 @@ module.exports = {
   database: {
     connectionLimit: 100,
     host: process.env.DATABASE_HOST || 'localhost',
-    user: 'root',
-    password: '123',
-    database: 'whistlet',
+    user: process.env.DATABASE_USER ||'root',
+    password: process.env.DATABASE_PASSWORD || '123',
+    database: process.env.DATABASE_NAME || 'whistlet',
     debug: false,
     port: 3306
   },

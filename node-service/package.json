@@ -4,18 +4,18 @@
   "version": "0.0.1",
   "license": "MIT",
   "scripts": {
-    "start": "source env.sh; node server.js",
+    "start": "pm2 delete server; source env.sh; pm2 start server.js; pm2 logs server",
     "dev": "nodemon",
-    "test": "mocha tests/controllers"
+    "test": "source env.sh; mocha tests/controllers --timeout 5000"
   },
   "dependencies": {
     "ajv": "^4.1.7",
+    "aws-sdk": "2.x",
     "body-parser": "~1.12.0",
     "express": "~4.12.2",
     "lodash": "^4.13.1",
     "morgan": "^1.7.0",
-    "mysql": "~2.5.5",
-    "aws-sdk": "2.x"
+    "mysql": "~2.5.5"
   },
   "devDependencies": {
     "assert": "^1.4.1",

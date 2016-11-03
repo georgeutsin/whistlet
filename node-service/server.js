@@ -21,8 +21,15 @@ module.exports.start = function (done) {
 
   app.use(function (req, res, next) {
 
-    // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001');
+    switch(req.headers.origin){
+      case 'http://whistlet.com':
+      case 'https://whistlet.com':
+        res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+        break;
+      default:
+        res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001');
+        break;
+    }
 
     // Request methods you wish to allow
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
@@ -57,7 +64,4 @@ module.exports.start = function (done) {
   });
 };
 
-// If someone ran: "node server.js" then automatically start the server
-if (path.basename(process.argv[1], '.js') == path.basename(__filename, '.js')) {
-  module.exports.start();
-}
+module.exports.start();
