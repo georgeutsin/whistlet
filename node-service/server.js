@@ -21,12 +21,14 @@ module.exports.start = function (done) {
 
   app.use(function (req, res, next) {
 
-    // Website you wish to allow to connect
-    var origins = ['http://localhost:3001', 'http://whistlet.com', 'https://whistlet.com'];
-    for(let origin of origins){
-        if(req.headers.origin.indexOf(origin) > -1){
-          res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
-        }
+    switch(req.headers.origin){
+      case 'http://whistlet.com':
+      case 'https://whistlet.com':
+        res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
+        break;
+      default:
+        res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001');
+        break;
     }
 
     // Request methods you wish to allow
