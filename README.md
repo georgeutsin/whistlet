@@ -3,6 +3,7 @@
 ## Installation
 
 `1.` Install docker for desktop and Kitematic for container management
+
 `2.` Build and run the docker test database image:
 ```
 cd whistlet/test-database
