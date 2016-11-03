@@ -6,7 +6,6 @@ var async = require('async');
 var broadcasts_controller = require('../../controllers/broadcasts_controller.js');
 var config = require('../../config');
 
-
 var api = supertest('http://localhost:'+config.port+'/v1');
 
 function Testuser () {
