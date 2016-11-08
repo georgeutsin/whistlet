@@ -10,7 +10,7 @@ module.exports = {
     app.post('/users/login', controllers.users.login);
     app.post('/users/logout', controllers.users.logout);
     app.get('/users/search', controllers.users.search);
-    // app.post('/users/upload_image', controllers.users.upload_image)
+    app.get('/users/signed_upload_url', controllers.users.signed_upload_url)
 
     app.post('/social/follow', controllers.social.follow);
     app.post('/social/unfollow', controllers.social.unfollow);

@@ -64,7 +64,7 @@ function Social () {
     return connection.acquire(function (con, resolve, reject) {
       var values = [];
       var query = `
-      SELECT follower_id AS id, username, name, avatar_hash, order_date, did_follow, follows_you
+      SELECT follower_id AS id, username, name, avatar_url, order_date, did_follow, follows_you
       FROM (
         SELECT follows.user_id AS follower_id, created_at AS order_date
         FROM follows
@@ -118,7 +118,7 @@ function Social () {
     return connection.acquire(function (con, resolve, reject) {
       var values = [];
       var query = `
-      SELECT following_id AS id, username, name, avatar_hash, order_date, did_follow, follows_you
+      SELECT following_id AS id, username, name, avatar_url, order_date, did_follow, follows_you
       FROM (
         SELECT follows.followed_id AS following_id, created_at AS order_date
         FROM follows
@@ -187,7 +187,7 @@ function Social () {
         query += ' NULL AS rebroadcast_username, NULL AS order_date, ';
       }
       query += `
-      avatar_hash
+      avatar_url
       FROM users
       WHERE users.id = (
         SELECT broadcasts.user_id

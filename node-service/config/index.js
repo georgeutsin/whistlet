@@ -12,5 +12,6 @@ module.exports = {
     debug: false,
     port: 3306
   },
-  s3_broadcast_image_bucket: 'whistbci'
+  s3_broadcast_image_bucket: 'whistbci',
+  s3_profile_image_bucket: 'whistpi'
 };
