@@ -29,7 +29,7 @@ function Auth () {
     return connection.acquire(function (con, resolve, reject) {
       var query = `
       SELECT
-      id, username, name, avatar_hash
+      id, username, name, avatar_url
       FROM users
       INNER JOIN
       (SELECT

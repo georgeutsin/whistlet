@@ -15,17 +15,16 @@ function User () {
     return connection.acquire(function (con, resolve, reject) {
       const hash = crypto.createHash('sha512');
       params.salt = crypto.randomBytes(64).toString('hex').substring(0, 64);
-      params.avatar_hash = crypto.randomBytes(64).toString('hex').substring(0, 32);
       params.password = hash.update(params.salt + params.password).digest('hex');
 
       var query = `
       INSERT INTO
       users (
-        username, name, password, email, avatar_hash, salt
+        username, name, password, email, salt
       )
       SELECT ?
       WHERE NOT EXISTS (SELECT id FROM users WHERE email = ? OR username =  ?) `;
-      values = [[params.username, params.name, params.password, params.email, params.avatar_hash, params.salt],
+      values = [[params.username, params.name, params.password, params.email, params.salt],
         params.email, params.username];
       query = mysql.format(query, values);
 
@@ -48,7 +47,7 @@ function User () {
     return connection.acquire(function (con, resolve, reject) {
       var values = [];
       var query = `
-      SELECT id, username, name, amp, created_at, avatar_hash,
+      SELECT id, username, name, amp, created_at, avatar_url,
       followers, following, did_follow, follows_you
       FROM users
       INNER JOIN (
@@ -242,7 +241,7 @@ function User () {
     return connection.acquire(function (con, resolve, reject) {
       var values = [];
       var query = `
-      SELECT follower_id AS id, username, name, avatar_hash, order_date, did_follow, follows_you
+      SELECT follower_id AS id, username, name, avatar_url, order_date, did_follow, follows_you
       FROM (
         SELECT follows.user_id AS follower_id, created_at AS order_date
         FROM follows
@@ -296,7 +295,7 @@ function User () {
     return connection.acquire(function (con, resolve, reject) {
       var values = [];
       var query = `
-      SELECT following_id AS id, username, name, avatar_hash, order_date, did_follow, follows_you
+      SELECT following_id AS id, username, name, avatar_url, order_date, did_follow, follows_you
       FROM (
         SELECT follows.followed_id AS following_id, created_at AS order_date
         FROM follows
@@ -365,7 +364,7 @@ function User () {
         query += ' NULL AS rebroadcast_username, NULL AS order_date, ';
       }
       query += `
-      avatar_hash
+      avatar_url
       FROM users
       WHERE users.id = (
         SELECT broadcasts.user_id
@@ -393,7 +392,7 @@ function User () {
     return connection.acquire(function (con, resolve, reject) {
       var values = [];
       var query = `
-      SELECT id, username, name, amp, created_at, avatar_hash,
+      SELECT id, username, name, amp, created_at, avatar_url,
       followers, following, did_follow, follows_you
       FROM users
       INNER JOIN (

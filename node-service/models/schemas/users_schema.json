@@ -51,6 +51,11 @@
       "description": "string to search broadcasts by, max 128 chars",
       "type": "string",
       "maxLength": 128
+    },
+    "avatar_url": {
+      "description": "url to user profile avatar image",
+      "type": "string",
+      "maxLength": 256
     }
   },
   "endpoints" : {
@@ -62,7 +67,7 @@
       "permitted_fields": ["token", "id", "username"]
     },
     "update": {
-      "permitted_fields": ["token", "name", "username"],
+      "permitted_fields": ["token", "name", "username", "avatar_url"],
       "required_fields": ["token"]
     },
     "delete": {
@@ -83,6 +88,10 @@
     "search": {
       "permitted_fields": ["token", "order_date", "search_query"],
       "required_fields": ["token", "search_query"]
+    },
+    "signed_upload_url": {
+      "permitted_fields": ["token", "file_name"],
+      "required_fields": ["token", "file_name"]
     }
   }
 }
