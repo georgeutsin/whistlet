@@ -1,5 +1,6 @@
 var connection = require('../models');
 var mysql = require('mysql');
+var helpers = require('../utils/helpers');
 
 function Event () {
   this.notificationSchema = require('./schemas/notifications_schema');
@@ -39,7 +40,7 @@ function Event () {
       values.push(params.cur_user_id);
 
       if (params.created_at) {
-        params.created_at = params.created_at.replace('T', ' ').substring(0, 19);
+        params.created_at = helpers.mysqlDateString(params.created_at);
         query += ` AND created_at < ? `;
         values.push(params.created_at);
       }
