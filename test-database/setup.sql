@@ -42,7 +42,7 @@ CREATE TABLE `blocks` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `user_id` bigint(20) DEFAULT NULL,
   `blocked_id` bigint(20) DEFAULT NULL,
-  `created_at` datetime DEFAULT 'CURRENT_TIMESTAMP',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
