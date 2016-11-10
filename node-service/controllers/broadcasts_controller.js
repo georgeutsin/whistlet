@@ -1,6 +1,7 @@
 var _ = require('lodash');
 var broadcast = require('../models/broadcast');
 var auth = require('../models/auth');
+var helpers = require('../utils/helpers');
 var Ajv = require('ajv');
 var ajv = new Ajv({allErrors: true});
 var config = require('../config');
@@ -13,18 +14,12 @@ for (var schema in broadcast.schemas) {
 }
 var endpoints = broadcast.broadcastSchema.endpoints;
 
-var charCountWithoutEmojis = function (text) {
-  var re = /:([^\s-]*?):/g;
-  var matches = text.match(re) || [];
-  return text.length - matches.join('').length + matches.length;
-};
-
 module.exports = {
   create: function (req, res) {
     var params = _.pick(req.body, endpoints.create.permitted_fields);
     params.token = req.body.token || req.query.token || req.headers['x-access-token'];
     var valid = validates.create(params);
-    var broadcastApparentLength = charCountWithoutEmojis(params.text);
+    var broadcastApparentLength = helpers.charCountWithoutEmojis(params.text);
     if (!valid) {
       res.status(400);
       return res.json({error: true, details: validates.create.errors});
@@ -286,8 +281,5 @@ module.exports = {
         res.status(reason.status);
         return res.json(reason);
       });
-  },
-
-  charCountWithoutEmojis: charCountWithoutEmojis
-
+  }
 };

@@ -6,7 +6,7 @@
   "scripts": {
     "start": "pm2 delete server; source env.sh; pm2 start server.js; pm2 logs server",
     "dev": "nodemon",
-    "test": "source env.sh; mocha tests/controllers --timeout 5000"
+    "test": "source env.sh; mocha tests --timeout 5000"
   },
   "dependencies": {
     "ajv": "^4.1.7",
