@@ -46,7 +46,6 @@ function Event () {
       query += ' ORDER BY created_at DESC LIMIT 20;';
       query = mysql.format(query, values);
 
-      console.log(query);
       con.query(query, function (err, result) {
         con.release();
         if (err) {
