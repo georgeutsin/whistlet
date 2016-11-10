@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Notifications",
+  "description": "Notification functions",
+  "type": "object",
+  "properties": {
+    "id": {
+      "description": "positive integer or string of digits",
+      "type": ["string", "integer"],
+      "pattern": "^[1-9][0-9]*$"
+    },
+    "user_id": {
+      "description": "positive integer or string of digits",
+      "type": ["string", "integer"],
+      "pattern": "^[1-9][0-9]*$"
+    },
+    "notify_user_id": {
+      "description": "positive integer or string of digits",
+      "type": ["string", "integer"],
+      "pattern": "^[1-9][0-9]*$"
+    },
+    "created_at": {
+      "description": "date-time of the creation of the event",
+      "type": "string",
+      "format": "date-time"
+    },
+    "read_at": {
+      "description": "date-time when the user read the notification (if a user was notified)",
+      "type": "string",
+      "format": "date-time"
+    },
+    "type": {
+      "description": "string of max length 64 chars describing the type of notification (ex: follow, rebroadcast)",
+      "type": "string",
+      "maxLength": 64
+    },
+    "description": {
+      "description": "string of max length 128 chars, stating the notification message",
+      "type": "string",
+      "maxLength": 128
+    },
+    "token": {
+      "description": "string of max length 128 chars",
+      "type": "string",
+      "maxLength": 128
+    }
+  },
+  "endpoints" : {
+    "get":{
+      "permitted_fields": ["token", "created_at"],
+      "required_fields": ["token"]
+    },
+    "read": {
+      "permitted_fields": ["token"],
+      "required_fields": ["token"]
+    }
+  }
+}

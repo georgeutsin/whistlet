@@ -1,5 +1,6 @@
 var connection = require('../models');
 var mysql = require('mysql');
+var helpers = require('../utils/helpers');
 const crypto = require('crypto');
 var userObj = require('../models/user');
 
@@ -91,6 +92,7 @@ function Social () {
           INNER JOIN (SELECT 0 AS follows_you) AS FOLLOWSYOU `;
       }
       if (params.last_date) {
+        params.last_date = helpers.mysqlDateString(params.last_date);
         query += ' WHERE order_date < ? ';
         values.push(params.last_date);
       }
@@ -145,6 +147,7 @@ function Social () {
           INNER JOIN (SELECT 0 AS follows_you) AS FOLLOWSYOU `;
       }
       if (params.last_date) {
+        params.last_date = helpers.mysqlDateString(params.last_date);
         query += ' WHERE order_date < ? ';
         values.push(params.last_date);
       }

@@ -42,7 +42,7 @@ CREATE TABLE `blocks` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `user_id` bigint(20) DEFAULT NULL,
   `blocked_id` bigint(20) DEFAULT NULL,
-  `created_at` varchar(45) DEFAULT 'CURRENT_TIMESTAMP',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -58,7 +58,7 @@ CREATE TABLE `broadcasts` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `user_id` bigint(20) NOT NULL,
   `text` varchar(1024) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `metadata` blob,
   `reply_to` bigint(20) DEFAULT NULL,
   PRIMARY KEY (`id`,`user_id`)
@@ -75,8 +75,9 @@ DROP TABLE IF EXISTS `events`;
 CREATE TABLE `events` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `user_id` bigint(20) NOT NULL,
-  `read_at` timestamp NULL DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `notify_user_id` bigint(20) NOT NULL,
+  `read_at` datetime NULL DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `type` varchar(64) NOT NULL,
   `description` varchar(128) DEFAULT NULL,
   PRIMARY KEY (`id`,`user_id`)
@@ -110,7 +111,7 @@ CREATE TABLE `rebroadcasts` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `user_id` bigint(20) NOT NULL,
   `broadcast_id` bigint(20) NOT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`,`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -142,7 +143,7 @@ DROP TABLE IF EXISTS `snapshots`;
 CREATE TABLE `snapshots` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `user_id` bigint(20) NOT NULL,
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` datetime NULL DEFAULT CURRENT_TIMESTAMP,
   `followers_count` int(11) DEFAULT NULL,
   `broadcasts_count` int(11) DEFAULT NULL,
   `rebroadcasts_count` int(11) DEFAULT NULL,
