@@ -17,7 +17,7 @@ module.exports = {
     app.get('/social/followers', controllers.social.followers);
     app.get('/social/following', controllers.social.following);
     app.get('/social/broadcast_owner', controllers.social.broadcast_owner);
-    //
+
     app.post('/broadcasts', controllers.broadcasts.create);
     app.get('/broadcasts/signed_upload_url', controllers.broadcasts.signed_upload_url);
     app.delete('/broadcasts', controllers.broadcasts.delete);
@@ -27,10 +27,10 @@ module.exports = {
     app.get('/broadcasts/search', controllers.broadcasts.search);
     app.post('/broadcasts/rebroadcast', controllers.broadcasts.rebroadcast);
     app.post('/broadcasts/unrebroadcast', controllers.broadcasts.unrebroadcast);
-  //
-  // app.get('/notifications', controllers.notifications.get)
-  // app.update('/notifications/read', controllers.notifications.read)
-  //
+
+    app.get('/notifications', controllers.notifications.get)
+    app.patch('/notifications/read', controllers.notifications.read)
+
   // app.post('/signups', controllers.signups.create)
   }
 };

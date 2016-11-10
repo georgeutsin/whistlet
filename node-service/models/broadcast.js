@@ -92,6 +92,7 @@ function Broadcast () {
       var query = select_broadcasts + did_rebroadcast(1);
       values.push(params.cur_user_id, params.cur_user_id);
       if (params.order_date) {
+        params.order_date = params.order_date.replace('T', ' ').substring(0, 19);
         query += ' WHERE broadcasts.created_at < ? ';
         values.push(params.order_date);
       }
@@ -161,6 +162,7 @@ function Broadcast () {
       ` + did_rebroadcast(3);
       values.push(params.cur_user_id, params.cur_user_id, params.cur_user_id, params.cur_user_id);
       if (params.order_date) {
+        params.order_date = params.order_date.replace('T', ' ').substring(0, 19);
         query += ' WHERE order_date < ?';
         values.push(params.order_date);
         query += broadcasts_query;
@@ -215,6 +217,7 @@ function Broadcast () {
       WHERE rebroadcasts.user_id = ? `;
       values.push(params.cur_user_id, params.cur_user_id, params.id);
       if (params.order_date) {
+        params.order_date = params.order_date.replace('T', ' ').substring(0, 19);
         query += ' AND order_date < ?';
         values.push(params.order_date);
       }
@@ -256,6 +259,7 @@ function Broadcast () {
       var query = select_broadcasts + did_rebroadcast(1) + ` WHERE text LIKE ? `;
       values.push(params.cur_user_id, params.cur_user_id, '%' + params.search_query + '%');
       if (params.order_date) {
+        params.order_date = params.order_date.replace('T', ' ').substring(0, 19);
         query += ' AND broadcasts.created_at < ? ';
         values.push(params.order_date);
       }
