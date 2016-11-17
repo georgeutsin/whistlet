@@ -3,10 +3,13 @@ var morgan = require('morgan');
 var path = require('path');
 var bodyparser = require('body-parser');
 var fs = require('fs');
+var cron = require('node-cron');
 
 var connection = require('./models');
 var routes = require('./config/routes');
 var config = require('./config');
+
+var maintenance = require('./models/maintenance');
 
 module.exports.start = function (done) {
   var app = express();
@@ -58,6 +61,17 @@ module.exports.start = function (done) {
   var router = express.Router();
   routes.configure(router);
   app.use('/v1', router);
+
+  cron.schedule('*/1 * * * *', function(){
+    maintenance.purge()
+      .then(function (result) {
+        console.log(result);
+      })
+      .catch(function (reason) {
+        reason.job = "purge failed";
+        console.log(reason);
+      });
+  });
 
   var server = app.listen(config.port, function () {
     console.log('Server listening on port ' + server.address().port);
