@@ -9,7 +9,7 @@
 sh db-reset.sh
 
 ```
-*IIf you have another MySQL instance running on port 3306, remember to stop it before running the script. Docker won't be able to start a container on an active port*
+*If you have another MySQL instance running on port 3306, remember to stop it before running the script. Docker won't be able to start a container on an active port*
 
 Optional: Install Kitematic for visual container debugging
 
