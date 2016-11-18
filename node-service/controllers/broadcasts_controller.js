@@ -210,7 +210,7 @@ module.exports = {
       .catch(function (reason) { return Promise.reject(reason); })
       .then(function (broadcast_result) {
         cur_broadcast = broadcast_result.broadcast;
-        if(cur_broadcast.user_id == params.user_id){
+        if(cur_broadcast.user_id === params.user_id){
           return Promise.reject({error: true, status: 400, details: "Cannot rebroadcast yourself"});
         }
         return broadcast.rebroadcast(params);
