@@ -70,6 +70,19 @@ describe('social_controller', () => {
       });
   });
 
+  it('cannot follow yourself', function (done) {
+    api.post('/social/follow').send({
+      followed_id: testuserList[1].id,
+      token: testuserList[1].token
+    })
+      .end(function (err, response) {
+        assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
+        assert.equal(response.status, 400);
+        assert.equal(response.body.error, true);
+        done();
+      });
+  });
+
   it('cannot follow a user twice', function (done) {
     api.post('/social/follow').send({
       followed_id: testuserList[1].id,

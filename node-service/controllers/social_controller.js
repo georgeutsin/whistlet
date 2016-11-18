@@ -23,6 +23,9 @@ module.exports = {
     auth.check_token(params)
       .catch(function (reason) { return Promise.reject(reason); })
       .then(function (cur_user) {
+        if(cur_user.id == params.followed_id){
+          return Promise.reject({error: true, status: 400, details: "Cannot follow yourself"});
+        }
         params.id = cur_user.id;
         return social.follow(params);
       })

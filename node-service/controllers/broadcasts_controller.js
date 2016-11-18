@@ -199,19 +199,27 @@ module.exports = {
       return res.json({error: true, details: validates.rebroadcast.errors});
     }
     // check if broadcast exists
-
+    var cur_broadcast;
     auth.check_token(params)
       .catch(function (reason) { return Promise.reject(reason); })
       .then(function (cur_user) {
         params.user_id = cur_user.id;
-        return broadcast.rebroadcast(params);
+        params.id = params.broadcast_id;
+        return broadcast.get(params);
       })
       .catch(function (reason) { return Promise.reject(reason); })
       .then(function (broadcast_result) {
-        res.status(201);
-        broadcast_result.status = 201;
-        broadcast_result.broadcast = _.pick(broadcast_result.broadcast, 'id', 'text', 'created_at', 'metadata');
-        return res.json(broadcast_result);
+        cur_broadcast = broadcast_result.broadcast;
+        if(cur_broadcast.user_id === params.user_id){
+          return Promise.reject({error: true, status: 400, details: "Cannot rebroadcast yourself"});
+        }
+        return broadcast.rebroadcast(params);
+      })
+      .catch(function (reason) { return Promise.reject(reason); })
+      .then(function (result) {
+        res.status(result.status);
+        result.broadcast = _.pick(cur_broadcast, 'id', 'text', 'created_at', 'metadata');
+        return res.json(result);
       })
       .catch(function (reason) {
         res.status(reason.status);
