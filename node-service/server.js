@@ -29,7 +29,7 @@ module.exports.start = function (done) {
       default:
         // allow netlify previews to hit the api
         // i.e. https://deploy-preview-32--whistlet.netlify.com
-        if (/whistlet\.netlify\.com/.test(req.headers.origin) {
+        if (/whistlet\.netlify\.com/.test(req.headers.origin)) {
           res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
         } else {
           res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3001');
