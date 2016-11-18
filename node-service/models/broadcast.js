@@ -305,7 +305,7 @@ function Broadcast () {
           if (result.affectedRows === 0) {
             reject({'error': true, 'status': 400, 'details': [{'message': 'Error: rebroadcast already exists'}]});
           } else {
-            resolve(broadcastObj.get({id: params.broadcast_id}));
+            resolve({'error': false, 'status': 201});
           }
         }
       });
