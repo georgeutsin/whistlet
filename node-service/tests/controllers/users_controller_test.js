@@ -221,12 +221,24 @@ describe('users_controller', () => {
 
   // SEARCH
   // ----------------------------------------------------------------------------
-  it('should respond with exists true for known user', function (done) {
+  it('should respond with exists true for known username', function (done) {
     api.get('/users/exists?username=' + cur_username)
       .end(function (err, response) {
         assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
         assert.equal(response.status, 200);
-        assert.equal(response.body.user_exists, true);
+        assert.equal(response.body.error, false);
+        assert.equal(response.body.username_exists, true);
+        done();
+      });
+  });
+
+  it('should respond with exists true for known email', function (done) {
+    api.get('/users/exists?email=' + testuser.email)
+      .end(function (err, response) {
+        assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
+        assert.equal(response.status, 200);
+        assert.equal(response.body.error, false);
+        assert.equal(response.body.email_exists, true);
         done();
       });
   });
