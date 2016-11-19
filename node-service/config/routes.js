@@ -28,8 +28,8 @@ module.exports = {
     app.post('/broadcasts/rebroadcast', controllers.broadcasts.rebroadcast);
     app.post('/broadcasts/unrebroadcast', controllers.broadcasts.unrebroadcast);
 
-    app.get('/notifications', controllers.notifications.get)
-    app.patch('/notifications/read', controllers.notifications.read)
+    app.get('/notifications', controllers.notifications.get);
+    app.patch('/notifications/read', controllers.notifications.read);
 
   // app.post('/signups', controllers.signups.create)
   }
