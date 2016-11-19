@@ -164,14 +164,15 @@ function Broadcast () {
       values.push(params.cur_user_id, params.cur_user_id, params.cur_user_id, params.cur_user_id);
       if (params.order_date) {
         params.order_date = helpers.mysqlDateString(params.order_date);
-        query += ' WHERE order_date < ?';
+        query += ' WHERE order_date < ? AND order_date > DATE_SUB(CURDATE(), INTERVAL 1 DAY)';
         values.push(params.order_date);
         query += broadcasts_query;
         values.push.apply(values, broadcasts_values);
-        query += ' WHERE created_at < ? ';
+        query += ' WHERE created_at < ? AND created_at > DATE_SUB(CURDATE(), INTERVAL 1 DAY)';
         values.push(params.order_date);
       } else {
         query += broadcasts_query;
+        query += 'WHERE created_at > DATE_SUB(CURDATE(), INTERVAL 1 DAY)';
         values.push.apply(values, broadcasts_values);
       }
       query += ' ORDER BY order_date DESC LIMIT 10;';
@@ -234,7 +235,7 @@ function Broadcast () {
         query += ' AND order_date < ?';
         values.push(params.order_date);
       }
-      query += ' ORDER BY order_date DESC LIMIT 10; ';
+      query += 'AND created_at > DATE_SUB(CURDATE(), INTERVAL 1 DAY) ORDER BY order_date DESC LIMIT 10; ';
       query = mysql.format(query, values);
 
       con.query(query, function (err, result) {
@@ -264,7 +265,7 @@ function Broadcast () {
         query += ' AND broadcasts.created_at < ? ';
         values.push(params.order_date);
       }
-      query += ' ORDER BY order_date DESC LIMIT 20; ';
+      query += ' AND created_at > DATE_SUB(CURDATE(), INTERVAL 1 DAY) ORDER BY order_date DESC LIMIT 20; ';
       query = mysql.format(query, values);
 
       con.query(query, function (err, result) {
