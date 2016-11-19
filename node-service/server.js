@@ -62,7 +62,7 @@ module.exports.start = function (done) {
   routes.configure(router);
   app.use('/v1', router);
 
-  cron.schedule('*/1 * * * *', function(){
+  cron.schedule('*/1 * * * *', function(){ //run every 1 minute
     maintenance.purge()
       .then(function (result) {
         console.log(result);
