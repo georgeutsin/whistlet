@@ -36,22 +36,6 @@ function Maintenance () {
       });
     });
   };
-
-  this.update_amp = function (params) {
-    return connection.acquire(function (con, resolve, reject) {
-      var query = ``;
-      query = mysql.format(query);
-
-      con.query(query, function (err, result) {
-        con.release();
-        if (err) {
-          reject({'error': true, 'status': 400, 'details': [{'message': 'Error: ' + err.code}]});
-        } else {
-          resolve({'error': false, 'status': 200});
-        }
-      });
-    });
-  };
 }
 
 module.exports = new Maintenance();
