@@ -150,7 +150,9 @@ module.exports = {
     user.details_for_user(params)
       .catch(function (reason) { return Promise.reject(reason); })
       .then(function (target_user) {
-        output = {error: false, status: 200, user_exists: true};
+        output = {error: false, status: 200};
+        output.username_exists = params.username === target_user.username;
+        output.email_exists = params.email === target_user.email;
         res.status(output.status);
         return res.json(output);
       })

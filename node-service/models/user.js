@@ -103,7 +103,7 @@ function User () {
 
   this.details_for_user = function (params) {
     return connection.acquire(function (con, resolve, reject) {
-      var query = 'SELECT id, salt FROM users WHERE username = ? OR email = ? LIMIT 1';
+      var query = 'SELECT id, salt, username, email FROM users WHERE username = ? OR email = ? LIMIT 1';
       query = mysql.format(query, [params.username, params.email]);
       con.query(query, function (err, result) {
         con.release();
