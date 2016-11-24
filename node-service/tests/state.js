@@ -4,18 +4,18 @@ var mysql = require('mysql');
 module.exports = {
   create_old_broadcasts: function () {
     return connection.acquire(function (con, resolve, reject) {
-      params = [
-        { user_id: 1 , text: "ayy lmao1", created_at: '2016-11-18 00:39:43'},
-        { user_id: 2 , text: "ayy lmao2", created_at: '2016-11-18 00:39:43'},
-        { user_id: 3 , text: "ayy lmao3", created_at: '2016-11-18 00:39:43'},
+      var params = [
+        [ 1, 'ayy lmao1', '2016-11-18 00:39:43'],
+        [ 2, 'ayy lmao2', '2016-11-18 00:39:43'],
+        [ 3, 'ayy lmao3', '2016-11-18 00:39:43']
       ];
-      var query = 'INSERT INTO broadcasts SET ?';
-      query = mysql.format(query, params);
+      var query = 'INSERT INTO broadcasts (user_id, text, created_at) VALUES ?';
+      query = mysql.format(query, [params]);
 
       con.query(query, function (err, result) {
         con.release();
         if (err) {
-          reject();
+          reject(err);
         } else {
           resolve();
         }
