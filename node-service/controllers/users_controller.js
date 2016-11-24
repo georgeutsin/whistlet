@@ -161,7 +161,7 @@ module.exports = {
           res.status(reason.status);
           return res.json(reason);
         } else {
-          output = {error: false, status: 200, user_exists: false};
+          output = {error: false, status: 200, username_exists: false, email_exists: false};
           res.status(output.status);
           return res.json(output);
         }

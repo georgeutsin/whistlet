@@ -228,6 +228,7 @@ describe('users_controller', () => {
         assert.equal(response.status, 200);
         assert.equal(response.body.error, false);
         assert.equal(response.body.username_exists, true);
+        assert.equal(response.body.email_exists, false);
         done();
       });
   });
@@ -238,6 +239,7 @@ describe('users_controller', () => {
         assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
         assert.equal(response.status, 200);
         assert.equal(response.body.error, false);
+        assert.equal(response.body.username_exists, false);
         assert.equal(response.body.email_exists, true);
         done();
       });
@@ -248,7 +250,8 @@ describe('users_controller', () => {
       .end(function (err, response) {
         assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
         assert.equal(response.status, 200);
-        assert.equal(response.body.user_exists, false);
+        assert.equal(response.body.username_exists, false);
+        assert.equal(response.body.email_exists, false);
         done();
       });
   });
