@@ -1,3 +1,4 @@
 /node-service/node_modules
 /node-service/env.sh
+/node-service/deploy.py
 *.log
