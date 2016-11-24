@@ -205,10 +205,10 @@ VALUES
 
 INSERT INTO `rebroadcasts` (`id`, `user_id`, `broadcast_id`, `created_at`)
 VALUES
-(1, 2, 4, '2016-11-18 01:31:09'),
-(2, 2, 1, NOW()),
-(3, 1, 2, NOW()),
-(4, 3, 2, NOW());
+(1, 2, 1, '2016-11-18 01:31:09'),
+(2, 2, 2, NOW()),
+(3, 1, 3, NOW()),
+(4, 3, 3, NOW());
 
 
 
