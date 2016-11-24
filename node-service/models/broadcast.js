@@ -135,7 +135,7 @@ function Broadcast () {
       var broadcasts_values = [params.cur_user_id, params.cur_user_id, params.cur_user_id, params.cur_user_id];
 
       var query = `
-      SELECT broadcasts.id, text, broadcasts.created_at, broadcasts.created_at AS order_date, metadata, reply_to,
+      SELECT broadcasts.id, text, broadcasts.created_at, order_date, metadata, reply_to,
       (
         SELECT COUNT(*)
         FROM rebroadcasts
@@ -199,7 +199,7 @@ function Broadcast () {
     return connection.acquire(function (con, resolve, reject) {
       var values = [];
       var query = `
-      SELECT broadcasts.id, text, broadcasts.created_at, broadcasts.created_at AS order_date, metadata, reply_to,
+      SELECT broadcasts.id, text, broadcasts.created_at, order_date, metadata, reply_to,
       (
         SELECT COUNT(*)
         FROM rebroadcasts
@@ -210,6 +210,10 @@ function Broadcast () {
       (SELECT IF(broadcasts.user_id = ?, 1, 0)) AS is_own_broadcast,
       rebroadcast_id
       FROM broadcasts
+      INNER JOIN (
+        SELECT created_at AS order_date
+        FROM rebroadcasts
+      ) AS RB3 ON broadcasts.id = RB3.broadcast_id
       INNER JOIN rebroadcasts ON broadcasts.id = rebroadcasts.broadcast_id
       LEFT JOIN (
         SELECT id AS did_rebroadcast, id AS rebroadcast_id, broadcast_id
