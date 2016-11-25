@@ -21,12 +21,10 @@ module.exports = {
     }
 
     auth.check_token(params)
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (cur_user) {
         params.cur_user_id = cur_user.id;
         return eventModel.get(params);
       })
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (notifications_result) {
         res.status(notifications_result.status);
         return res.json(notifications_result);
@@ -47,12 +45,10 @@ module.exports = {
     }
 
     auth.check_token(params)
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (cur_user) {
         params.cur_user_id = cur_user.id;
         return eventModel.read(params);
       })
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (notifications_result) {
         res.status(notifications_result.status);
         return res.json(notifications_result);

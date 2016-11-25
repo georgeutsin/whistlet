@@ -43,7 +43,6 @@ module.exports = {
     }
     params.bypass_auth = true;
     auth.check_token(params)
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (cur_user) {
         if (cur_user) {
           params.cur_user_id = cur_user.id;
@@ -54,12 +53,10 @@ module.exports = {
           return user.details_for_user(params);
         }
       })
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (target_user) {
         params.id = target_user.id;
         return user.get(params);
       })
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (user_result) {
         res.status(user_result.status);
         return res.json(user_result);
@@ -80,7 +77,6 @@ module.exports = {
     }
 
     user.details_for_user(params)
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (target_user) {
         output = {error: true, status: 400, user_exists: true};
         res.status(output.status);
@@ -119,16 +115,13 @@ module.exports = {
       return res.json({error: true, details: validates.delete.errors});
     }
     auth.check_token(params)
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (cur_user) {
         params.id = cur_user.id;
         return auth.delete_token(params);
       })
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (result) {
         return user.delete(params);
       })
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (user_result) {
         res.status(user_result.status);
         return res.json(user_result);
@@ -148,7 +141,6 @@ module.exports = {
     }
 
     user.details_for_user(params)
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (target_user) {
         output = {error: false, status: 200};
         output.username_exists = params.username === target_user.username;
@@ -186,17 +178,14 @@ module.exports = {
     }
 
     user.details_for_user(params)
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (target_user) {
         params.salt = target_user.salt;
         params.id = target_user.id;
         return user.check_user(params);
       })
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (user_id) {
         return auth.create_token({ user_id: params.id });
       })
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (result) {
         res.status(result.status);
         return res.json(result);
@@ -216,7 +205,6 @@ module.exports = {
     }
 
     auth.delete_token(params)
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (result) {
         res.status(result.status);
         return res.json(result);
@@ -236,12 +224,10 @@ module.exports = {
     }
 
     auth.check_token(params)
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (cur_user) {
         params.cur_user_id = cur_user.id;
         return user.search(params);
       })
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (users_result) {
         res.status(users_result.status);
         return res.json(users_result);
@@ -267,7 +253,6 @@ module.exports = {
     var s3params = {Bucket: config.s3_profile_image_bucket, Key: params.file_name};
 
     auth.check_token(params)
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (cur_user) {
         console.log('lol');
         s3.getSignedUrl('putObject', s3params, (err, data) => {

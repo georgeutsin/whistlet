@@ -32,13 +32,11 @@ module.exports = {
     }
 
     auth.check_token(params)
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (cur_user) {
         var bc = _.pick(params, 'text', 'metadata', 'reply_to');
         bc.user_id = cur_user.id;
         return broadcast.create(bc);
       })
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (result) {
         res.status(201);
         result.status = 201;
@@ -67,15 +65,12 @@ module.exports = {
     }
 
     auth.check_token(params)
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (cur_user) {
         return broadcast.get(params);
       })
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (broadcast_result) {
         return broadcast.delete(broadcast_result.broadcast);
       })
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (result) {
         res.status(result.status);
         return res.json(result);
@@ -96,12 +91,10 @@ module.exports = {
     }
 
     auth.check_token(params)
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (cur_user) {
         params.cur_user_id = cur_user.id;
         return broadcast.explore(params);
       })
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (broadcasts_result) {
         res.status(broadcasts_result.status);
         return res.json(broadcasts_result);
@@ -122,12 +115,10 @@ module.exports = {
     }
 
     auth.check_token(params)
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (cur_user) {
         params.cur_user_id = cur_user.id;
         return broadcast.home(params);
       })
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (broadcasts_result) {
         res.status(broadcasts_result.status);
         return res.json(broadcasts_result);
@@ -148,12 +139,10 @@ module.exports = {
     }
     // check that profile exists ***********LOL
     auth.check_token(params)
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (cur_user) {
         params.cur_user_id = cur_user.id;
         return broadcast.profile(params);
       })
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (broadcasts_result) {
         res.status(broadcasts_result.status);
         return res.json(broadcasts_result);
@@ -174,12 +163,10 @@ module.exports = {
     }
 
     auth.check_token(params)
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (cur_user) {
         params.cur_user_id = cur_user.id;
         return broadcast.search(params);
       })
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (broadcasts_result) {
         res.status(broadcasts_result.status);
         return res.json(broadcasts_result);
@@ -201,13 +188,11 @@ module.exports = {
     // check if broadcast exists
     var cur_broadcast;
     auth.check_token(params)
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (cur_user) {
         params.user_id = cur_user.id;
         params.id = params.broadcast_id;
         return broadcast.get(params);
       })
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (broadcast_result) {
         cur_broadcast = broadcast_result.broadcast;
         if(cur_broadcast.user_id === params.user_id){
@@ -215,7 +200,6 @@ module.exports = {
         }
         return broadcast.rebroadcast(params);
       })
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (result) {
         res.status(result.status);
         result.broadcast = _.pick(cur_broadcast, 'id', 'text', 'created_at', 'metadata');
@@ -237,12 +221,10 @@ module.exports = {
     }
     // check if broadcast exists
     auth.check_token(params)
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (cur_user) {
         params.user_id = cur_user.id;
         return broadcast.unrebroadcast(params);
       })
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (broadcast_result) {
         res.status(broadcast_result.status);
         broadcast_result.broadcast = _.pick(broadcast_result.broadcast, 'id', 'text', 'created_at', 'metadata');
@@ -269,7 +251,6 @@ module.exports = {
     var s3params = {Bucket: config.s3_broadcast_image_bucket, Key: params.file_name};
 
     auth.check_token(params)
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (cur_user) {
         s3.getSignedUrl('putObject', s3params, (err, data) => {
           if (err) {

@@ -21,7 +21,6 @@ module.exports = {
     }
 
     auth.check_token(params)
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (cur_user) {
         if(cur_user.id == params.followed_id){
           return Promise.reject({error: true, status: 400, details: "Cannot follow yourself"});
@@ -29,7 +28,6 @@ module.exports = {
         params.id = cur_user.id;
         return social.follow(params);
       })
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (user_result) {
         res.status(201);
         user_result.status = 201;
@@ -51,12 +49,10 @@ module.exports = {
     }
 
     auth.check_token(params)
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (cur_user) {
         params.id = cur_user.id;
         return social.unfollow(params);
       })
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (user_result) {
         res.status(user_result.status);
         return res.json(user_result);
@@ -77,12 +73,10 @@ module.exports = {
     }
 
     auth.check_token(params)
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (cur_user) {
         params.cur_user_id = cur_user.id;
         return social.followers(params);
       })
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (users_result) {
         res.status(users_result.status);
         return res.json(users_result);
@@ -103,12 +97,10 @@ module.exports = {
     }
 
     auth.check_token(params)
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (cur_user) {
         params.cur_user_id = cur_user.id;
         return social.following(params);
       })
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (users_result) {
         res.status(users_result.status);
         return res.json(users_result);
@@ -129,11 +121,9 @@ module.exports = {
     }
 
     auth.check_token(params)
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (cur_user) {
         return social.broadcast_owner(params);
       })
-      .catch(function (reason) { return Promise.reject(reason); })
       .then(function (user_result) {
         res.status(user_result.status);
         return res.json(user_result);
