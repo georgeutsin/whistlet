@@ -76,6 +76,7 @@ CREATE TABLE `events` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `user_id` bigint(20) NOT NULL,
   `notify_user_id` bigint(20) NOT NULL,
+  `should_notify` tinyint(1) NOT NULL DEFAULT 0,
   `read_at` datetime NULL DEFAULT NULL,
   `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `type` varchar(64) NOT NULL,
