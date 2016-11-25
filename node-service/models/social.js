@@ -65,9 +65,9 @@ function Social () {
     return connection.acquire(function (con, resolve, reject) {
       var values = [];
       var query = `
-      SELECT follower_id AS id, username, name, avatar_url, order_date, did_follow, follows_you
+      SELECT follower_id AS id, username, name, avatar_url, F.created_at, did_follow, follows_you
       FROM (
-        SELECT follows.user_id AS follower_id, created_at AS order_date
+        SELECT follows.user_id AS follower_id, created_at
         FROM follows
         WHERE followed_id = ?
       ) AS F
@@ -91,12 +91,12 @@ function Social () {
           INNER JOIN (SELECT 0 AS did_follow) AS DIDFOLLOW
           INNER JOIN (SELECT 0 AS follows_you) AS FOLLOWSYOU `;
       }
-      if (params.last_date) {
-        params.last_date = helpers.mysqlDateString(params.last_date);
-        query += ' WHERE order_date < ? ';
-        values.push(params.last_date);
+      if (params.created_at) {
+        params.created_at = helpers.mysqlDateString(params.created_at);
+        query += ' WHERE created_at < ? ';
+        values.push(params.created_at);
       }
-      query += ' ORDER BY order_date DESC LIMIT 20;';
+      query += ' ORDER BY created_at DESC LIMIT 20;';
       query = mysql.format(query, values);
 
       con.query(query, function (err, result) {
@@ -120,9 +120,9 @@ function Social () {
     return connection.acquire(function (con, resolve, reject) {
       var values = [];
       var query = `
-      SELECT following_id AS id, username, name, avatar_url, order_date, did_follow, follows_you
+      SELECT following_id AS id, username, name, avatar_url, F.created_at, did_follow, follows_you
       FROM (
-        SELECT follows.followed_id AS following_id, created_at AS order_date
+        SELECT follows.followed_id AS following_id, created_at
         FROM follows
         WHERE user_id = ?
       ) AS F
@@ -146,12 +146,12 @@ function Social () {
           INNER JOIN (SELECT 0 AS did_follow) AS DIDFOLLOW
           INNER JOIN (SELECT 0 AS follows_you) AS FOLLOWSYOU `;
       }
-      if (params.last_date) {
-        params.last_date = helpers.mysqlDateString(params.last_date);
-        query += ' WHERE order_date < ? ';
-        values.push(params.last_date);
+      if (params.created_at) {
+        params.created_at = helpers.mysqlDateString(params.created_at);
+        query += ' WHERE created_at < ? ';
+        values.push(params.created_at);
       }
-      query += ' ORDER BY order_date DESC LIMIT 20;';
+      query += ' ORDER BY created_at DESC LIMIT 20;';
       query = mysql.format(query, values);
 
       con.query(query, function (err, result) {

@@ -211,15 +211,15 @@ function Broadcast () {
       rebroadcast_id
       FROM broadcasts
       INNER JOIN (
-        SELECT created_at AS order_date
+        SELECT created_at AS order_date, broadcast_id
         FROM rebroadcasts
-      ) AS RB3 ON broadcasts.id = RB3.broadcast_id
+      ) AS RB2 ON broadcasts.id = RB2.broadcast_id
       INNER JOIN rebroadcasts ON broadcasts.id = rebroadcasts.broadcast_id
       LEFT JOIN (
         SELECT id AS did_rebroadcast, id AS rebroadcast_id, broadcast_id
         FROM rebroadcasts
         WHERE rebroadcasts.user_id = ?
-      ) AS RB2 ON broadcasts.id = RB2.broadcast_id
+      ) AS RB3 ON broadcasts.id = RB3.broadcast_id
       WHERE rebroadcasts.user_id = ? `;
       values.push(params.cur_user_id, params.cur_user_id, params.id);
       if (params.order_date) {
