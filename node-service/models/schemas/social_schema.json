@@ -49,7 +49,7 @@
       "required_fields": ["token", "id"]
     },
     "following": {
-      "permitted_fields": ["token", "id", "last_date"],
+      "permitted_fields": ["token", "id", "created_at"],
       "required_fields": ["token", "id"]
     },
     "broadcast_owner": {
