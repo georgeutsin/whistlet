@@ -28,7 +28,7 @@ module.exports = {
       result.status = 201;
       return res.json(result);
     }, function (reason) {
-      res.status(reason.status);
+      res.status(reason.status || 500);
       return res.json(reason);
     });
   },
@@ -62,7 +62,7 @@ module.exports = {
         return res.json(user_result);
       })
       .catch(function (reason) {
-        res.status(reason.status);
+        res.status(reason.status || 500);
         return res.json(reason);
       });
   },
@@ -84,7 +84,7 @@ module.exports = {
       })
       .catch(function (reason) {
         if (reason.status != 404) {
-          res.status(reason.status);
+          res.status(reason.status || 500);
           return res.json(reason);
         } else {
           auth.check_token(params)
@@ -99,7 +99,7 @@ module.exports = {
               return res.json(user_result);
             })
             .catch(function (reason) {
-              res.status(reason.status);
+              res.status(reason.status || 500);
               return res.json(reason);
             });
         }
@@ -127,7 +127,7 @@ module.exports = {
         return res.json(user_result);
       })
       .catch(function (reason) {
-        res.status(reason.status);
+        res.status(reason.status || 500);
         return res.json(reason);
       });
   },
@@ -150,7 +150,7 @@ module.exports = {
       })
       .catch(function (reason) {
         if (reason.status != 404) {
-          res.status(reason.status);
+          res.status(reason.status || 500);
           return res.json(reason);
         } else {
           output = {error: false, status: 200, username_exists: false, email_exists: false};
@@ -190,7 +190,7 @@ module.exports = {
         res.status(result.status);
         return res.json(result);
       }, function (reason) {
-        res.status(reason.status);
+        res.status(reason.status || 500);
         return res.json(reason);
       });
   },
@@ -209,7 +209,7 @@ module.exports = {
         res.status(result.status);
         return res.json(result);
       }, function (reason) {
-        res.status(reason.status);
+        res.status(reason.status || 500);
         return res.json(reason);
       });
   },
@@ -233,7 +233,7 @@ module.exports = {
         return res.json(users_result);
       })
       .catch(function (reason) {
-        res.status(reason.status);
+        res.status(reason.status || 500);
         return res.json(reason);
       });
   },
@@ -271,7 +271,7 @@ module.exports = {
         });
       })
       .catch(function (reason) {
-        res.status(reason.status);
+        res.status(reason.status || 500);
         return res.json(reason);
       });
   }

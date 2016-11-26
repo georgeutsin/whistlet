@@ -1,5 +1,6 @@
 var _ = require('lodash');
 var broadcast = require('../models/broadcast');
+var eventModel = require('../models/event');
 var auth = require('../models/auth');
 var helpers = require('../utils/helpers');
 var Ajv = require('ajv');
@@ -35,6 +36,7 @@ module.exports = {
       .then(function (cur_user) {
         var bc = _.pick(params, 'text', 'metadata', 'reply_to');
         bc.user_id = cur_user.id;
+        params.user_id = cur_user.id;
         return broadcast.create(bc);
       })
       .then(function (result) {
@@ -47,10 +49,19 @@ module.exports = {
         result.broadcast.did_rebroadcast = false;
         result.broadcast.is_own_broadcast = true;
         result.broadcast.is_rebroadcast = false;
+
+        eventModel.create({
+          user_id: params.user_id,
+          notify_user_id: 0,
+          should_notify: 0,
+          type: 'create_broadcast',
+          description: `{broadcast_id: ${result.broadcast.id}}`
+        });
+
         return res.json(result);
       })
       .catch(function (reason) {
-        res.status(reason.status);
+        res.status(reason.status || 500);
         return res.json(reason);
       });
   },
@@ -66,17 +77,34 @@ module.exports = {
 
     auth.check_token(params)
       .then(function (cur_user) {
+        params.user_id = cur_user.id;
         return broadcast.get(params);
       })
       .then(function (broadcast_result) {
+        if(params.user_id !== broadcast_result.broadcast.user_id){
+          return new Promise.reject({
+            error: true,
+            status: 400,
+            details: [{message: 'Error: Cannot delete broadcasts other than your own'}]
+          });
+        }
         return broadcast.delete(broadcast_result.broadcast);
       })
       .then(function (result) {
         res.status(result.status);
+
+        eventModel.create({
+          user_id: params.user_id,
+          notify_user_id: 0,
+          should_notify: 0,
+          type: 'delete_broadcast',
+          description: `{broadcast_id: ${params.id}}`
+        });
+
         return res.json(result);
       })
       .catch(function (reason) {
-        res.status(reason.status);
+        res.status(reason.status || 500);
         return res.json(reason);
       });
   },
@@ -97,6 +125,14 @@ module.exports = {
       })
       .then(function (broadcasts_result) {
         res.status(broadcasts_result.status);
+
+        eventModel.create({
+          user_id: params.cur_user_id,
+          notify_user_id: 0,
+          should_notify: 0,
+          type: 'viewed_explore'
+        });
+
         return res.json(broadcasts_result);
       })
       .catch(function (reason) {
@@ -121,10 +157,18 @@ module.exports = {
       })
       .then(function (broadcasts_result) {
         res.status(broadcasts_result.status);
+
+        eventModel.create({
+          user_id: params.cur_user_id,
+          notify_user_id: 0,
+          should_notify: 0,
+          type: 'viewed_home'
+        });
+
         return res.json(broadcasts_result);
       })
       .catch(function (reason) {
-        res.status(reason.status);
+        res.status(reason.status || 500);
         return res.json(reason);
       });
   },
@@ -145,10 +189,18 @@ module.exports = {
       })
       .then(function (broadcasts_result) {
         res.status(broadcasts_result.status);
+
+        eventModel.create({
+          user_id: params.cur_user_id,
+          notify_user_id: params.id,
+          should_notify: 0,
+          type: 'viewed_profile'
+        });
+
         return res.json(broadcasts_result);
       })
       .catch(function (reason) {
-        res.status(reason.status);
+        res.status(reason.status || 500);
         return res.json(reason);
       });
   },
@@ -169,10 +221,19 @@ module.exports = {
       })
       .then(function (broadcasts_result) {
         res.status(broadcasts_result.status);
+
+        eventModel.create({
+          user_id: params.user_id,
+          notify_user_id: 0,
+          should_notify: 0,
+          type: 'viewed_search',
+          description: `{search_query: ${params.search_query}}`
+        });
+
         return res.json(broadcasts_result);
       })
       .catch(function (reason) {
-        res.status(reason.status);
+        res.status(reason.status || 500);
         return res.json(reason);
       });
   },
@@ -198,15 +259,25 @@ module.exports = {
         if(cur_broadcast.user_id === params.user_id){
           return Promise.reject({error: true, status: 400, details: "Cannot rebroadcast yourself"});
         }
+        params.notify_user_id = cur_broadcast.user_id;
         return broadcast.rebroadcast(params);
       })
       .then(function (result) {
         res.status(result.status);
         result.broadcast = _.pick(cur_broadcast, 'id', 'text', 'created_at', 'metadata');
+
+        eventModel.create({
+          user_id: params.user_id,
+          notify_user_id: params.notify_user_id,
+          should_notify: 1,
+          type: 'rebroadcast',
+          description: '{message: \'You were rebroadcasted!\'}'
+        });
+
         return res.json(result);
       })
       .catch(function (reason) {
-        res.status(reason.status);
+        res.status(reason.status || 500);
         return res.json(reason);
       });
   },
@@ -228,10 +299,18 @@ module.exports = {
       .then(function (broadcast_result) {
         res.status(broadcast_result.status);
         broadcast_result.broadcast = _.pick(broadcast_result.broadcast, 'id', 'text', 'created_at', 'metadata');
+
+        eventModel.create({
+          user_id: params.user_id,
+          notify_user_id: params.notify_user_id,
+          should_notify: 0,
+          type: 'unrebroadcast'
+        });
+
         return res.json(broadcast_result);
       })
       .catch(function (reason) {
-        res.status(reason.status);
+        res.status(reason.status || 500);
         return res.json(reason);
       });
   },
@@ -267,7 +346,7 @@ module.exports = {
         });
       })
       .catch(function (reason) {
-        res.status(reason.status);
+        res.status(reason.status || 500);
         return res.json(reason);
       });
   }
