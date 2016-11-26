@@ -30,7 +30,7 @@ module.exports = {
         return res.json(notifications_result);
       })
       .catch(function (reason) {
-        res.status(reason.status);
+        res.status(reason.status || 500);
         return res.json(reason);
       });
   },
@@ -54,7 +54,7 @@ module.exports = {
         return res.json(notifications_result);
       })
       .catch(function (reason) {
-        res.status(reason.status);
+        res.status(reason.status || 500);
         return res.json(reason);
       });
   }

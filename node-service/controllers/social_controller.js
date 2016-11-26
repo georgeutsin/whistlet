@@ -1,5 +1,6 @@
 var _ = require('lodash');
 var social = require('../models/social');
+var eventModel = require('../models/event');
 var auth = require('../models/auth');
 var Ajv = require('ajv');
 var ajv = new Ajv({allErrors: true});
@@ -31,10 +32,19 @@ module.exports = {
       .then(function (user_result) {
         res.status(201);
         user_result.status = 201;
+
+        eventModel.create({
+          user_id: params.id,
+          notify_user_id: user_result.user.id,
+          should_notify: 1,
+          type: 'follow',
+          description: `{message: 'You were followed by @${user_result.username}!', username: ${user_result.username}}`
+        });
+
         return res.json(user_result);
       })
       .catch(function (reason) {
-        res.status(reason.status);
+        res.status(reason.status || 500);
         return res.json(reason);
       });
   },
@@ -55,10 +65,18 @@ module.exports = {
       })
       .then(function (user_result) {
         res.status(user_result.status);
+
+        eventModel.create({
+          user_id: params.id,
+          notify_user_id: user_result.user.id,
+          should_notify: 0,
+          type: 'follow'
+        });
+
         return res.json(user_result);
       })
       .catch(function (reason) {
-        res.status(reason.status);
+        res.status(reason.status || 500);
         return res.json(reason);
       });
   },
@@ -82,7 +100,7 @@ module.exports = {
         return res.json(users_result);
       })
       .catch(function (reason) {
-        res.status(reason.status);
+        res.status(reason.status || 500);
         return res.json(reason);
       });
   },
@@ -106,7 +124,7 @@ module.exports = {
         return res.json(users_result);
       })
       .catch(function (reason) {
-        res.status(reason.status);
+        res.status(reason.status || 500);
         return res.json(reason);
       });
   },
@@ -122,14 +140,24 @@ module.exports = {
 
     auth.check_token(params)
       .then(function (cur_user) {
+        params.user_id = cur_user.id;
         return social.broadcast_owner(params);
       })
       .then(function (user_result) {
         res.status(user_result.status);
+
+        eventModel.create({
+          user_id: params.user_id,
+          notify_user_id: user_result.user.id,
+          should_notify: 0,
+          type: 'viewed_broadcast',
+          description: `{broadcast_id: ${params.broadcast_id}, rebroadcast_id: ${params.rebroadcast_id}}`
+        });
+
         return res.json(user_result);
       })
       .catch(function (reason) {
-        res.status(reason.status);
+        res.status(reason.status || 500);
         return res.json(reason);
       });
   }

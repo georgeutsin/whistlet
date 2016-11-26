@@ -11,8 +11,10 @@ function Event () {
   }
   var eventObj = this;
 
-  this.create = function (params, res) {
+  this.create = function (params) {
+    console.log("QWERQWERQWER", params);
     return connection.acquire(function (con, resolve, reject) {
+      //user_id, notify_user_id, should_notify, type, description
       var query = 'INSERT INTO events SET ?';
       query = mysql.format(query, params);
 
