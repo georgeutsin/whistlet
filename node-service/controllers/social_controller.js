@@ -70,7 +70,7 @@ module.exports = {
           user_id: params.id,
           notify_user_id: user_result.user.id,
           should_notify: 0,
-          type: 'follow'
+          type: 'unfollow'
         });
 
         return res.json(user_result);

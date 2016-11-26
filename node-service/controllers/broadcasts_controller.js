@@ -271,7 +271,7 @@ module.exports = {
           notify_user_id: params.notify_user_id,
           should_notify: 1,
           type: 'rebroadcast',
-          description: `{message: 'You were rebroadcasted!'}`
+          description: '{message: \'You were rebroadcasted!\'}'
         });
 
         return res.json(result);
