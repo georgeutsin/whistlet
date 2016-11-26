@@ -4,6 +4,7 @@ var assert = require('assert');
 var supertest = require('supertest');
 var async = require('async');
 var config = require('../../config');
+var eventModel = require('../../models/event');
 
 var api = supertest('http://localhost:'+config.port+'/v1');
 
@@ -56,18 +57,34 @@ describe('social_controller', () => {
   });
 
   it('follow a user', function (done) {
-    api.post('/social/follow').send({
-      followed_id: testuserList[1].id,
-      token: testuserList[0].token
+    var oldEventCount = 0;
+    eventModel.count().then(function (count) {
+      var oldEventCount = count;
+      api.post('/social/follow').send({
+        followed_id: testuserList[1].id,
+        token: testuserList[0].token
+      })
+        .end(function (err, response) {
+          assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
+          assert.equal(response.status, 201);
+          assert.equal(response.body.user.id, testuserList[1].id);
+          assert.equal(response.body.user.followers, 1);
+          assert.equal(response.body.user.did_follow, true);
+          eventModel.count().then(function (count) {
+            assert.equal(oldEventCount + 1, count);
+            done();
+          })
+          .catch(function (err){
+            console.log(err);
+            done();
+          });
+        });
     })
-      .end(function (err, response) {
-        assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
-        assert.equal(response.status, 201);
-        assert.equal(response.body.user.id, testuserList[1].id);
-        assert.equal(response.body.user.followers, 1);
-        assert.equal(response.body.user.did_follow, true);
-        done();
-      });
+    .catch(function (err){
+      console.log(err);
+      done();
+    });
+
   });
 
   it('cannot follow yourself', function (done) {

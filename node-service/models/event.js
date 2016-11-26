@@ -12,7 +12,6 @@ function Event () {
   var eventObj = this;
 
   this.create = function (params) {
-    console.log("QWERQWERQWER", params);
     return connection.acquire(function (con, resolve, reject) {
       //user_id, notify_user_id, should_notify, type, description
       var query = 'INSERT INTO events SET ?';
@@ -76,7 +75,7 @@ function Event () {
     });
   };
 
-  this.delete = function (params, res) {
+  this.delete = function (params) {
     return connection.acquire(function (con, resolve, reject) {
       var query = 'DELETE FROM events WHERE id = ? ';
       query = mysql.format(query, params.id);
@@ -84,6 +83,18 @@ function Event () {
       con.query(query, function (err, result) {
         con.release();
         resolve({error: err, result: result});
+      });
+    });
+  };
+
+  this.count = function(){
+    return connection.acquire(function (con, resolve, reject) {
+      var query = 'SELECT COUNT(*) as count FROM events';
+
+      con.query(query, function (err, result) {
+        con.release();
+        if(err) reject(err);
+        resolve(result[0].count);
       });
     });
   };

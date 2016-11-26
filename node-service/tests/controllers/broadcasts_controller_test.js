@@ -4,6 +4,7 @@ var assert = require('assert');
 var supertest = require('supertest');
 var async = require('async');
 var config = require('../../config');
+var eventModel = require('../../models/event');
 
 var api = supertest('http://localhost:'+config.port+'/v1');
 
@@ -61,20 +62,36 @@ describe('broadcasts_controller', () => {
   // ----------------------------------------------------------------------------
 
   it('should respond with 201 for creation of broadcast', function (done) {
-    api.post('/broadcasts').send({token: testuserList[0].token, text: 'My broadcast text'})
-      .end(function (err, response) {
-        assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
-        assert.equal(response.status, 201);
-        assert.equal(response.body.broadcast.text, 'My broadcast text');
-        assert.equal(response.body.broadcast.user_id, undefined); // make sure user_id isn't serialized
-        assert.equal(response.body.broadcast.rebroadcast_count, 0);
-        assert.equal(response.body.broadcast.did_rebroadcast, false);
-        assert.equal(response.body.broadcast.is_rebroadcast, false);
-        assert.equal(response.body.broadcast.is_own_broadcast, true);
-        assert.equal(response.body.broadcast.rebroadcast_id, 0);
-        broadcastList.push(response.body.broadcast);
-        done();
-      });
+    var oldEventCount = 0;
+    eventModel.count().then(function (count) {
+      var oldEventCount = count;
+      api.post('/broadcasts').send({token: testuserList[0].token, text: 'My broadcast text'})
+        .end(function (err, response) {
+          assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
+          assert.equal(response.status, 201);
+          assert.equal(response.body.broadcast.text, 'My broadcast text');
+          assert.equal(response.body.broadcast.user_id, undefined); // make sure user_id isn't serialized
+          assert.equal(response.body.broadcast.rebroadcast_count, 0);
+          assert.equal(response.body.broadcast.did_rebroadcast, false);
+          assert.equal(response.body.broadcast.is_rebroadcast, false);
+          assert.equal(response.body.broadcast.is_own_broadcast, true);
+          assert.equal(response.body.broadcast.rebroadcast_id, 0);
+          broadcastList.push(response.body.broadcast);
+          eventModel.count().then(function (count) {
+            assert.equal(oldEventCount + 1, count);
+            done();
+          })
+          .catch(function (err){
+            console.log(err);
+            done();
+          });
+        });
+    })
+    .catch(function (err){
+      console.log(err);
+      done();
+    });
+
   });
 
   it('get all broadcasts', function (done) {
@@ -142,16 +159,31 @@ describe('broadcasts_controller', () => {
   });
 
   it('make a rebroadcast', function (done) {
-    api.post('/broadcasts/rebroadcast').send({
-      broadcast_id: broadcastList[0].id,
-      token: testuserList[1].token
+    var oldEventCount = 0;
+    eventModel.count().then(function (count) {
+      var oldEventCount = count;
+      api.post('/broadcasts/rebroadcast').send({
+        broadcast_id: broadcastList[0].id,
+        token: testuserList[1].token
+      })
+        .end(function (err, response) {
+          assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
+          assert.equal(response.status, 201);
+          assert.equal(response.body.broadcast.id, broadcastList[0].id);
+          eventModel.count().then(function (count) {
+          assert.equal(oldEventCount + 1, count);
+            done();
+          })
+          .catch(function (err){
+            console.log(err);
+            done();
+          });
+        });
     })
-      .end(function (err, response) {
-        assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
-        assert.equal(response.status, 201);
-        assert.equal(response.body.broadcast.id, broadcastList[0].id);
-        done();
-      });
+    .catch(function (err){
+      console.log(err);
+      done();
+    });
   });
 
   it('cannot rebroadcast same broadcast', function (done) {
@@ -259,23 +291,49 @@ describe('broadcasts_controller', () => {
   });
 
   it('get broadcast_owner', function (done) {
-    api.get('/social/broadcast_owner?token=' + testuserList[1].token + '&broadcast_id=' + broadcastList[0].id)
-      .end(function (err, response) {
-        assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
-        assert.equal(response.status, 200);
-        assert(response.body.user);
-        done();
-      });
+    var oldEventCount = 0;
+    eventModel.count().then(function (count) {
+      var oldEventCount = count;
+      api.get('/social/broadcast_owner?token=' + testuserList[1].token + '&broadcast_id=' + broadcastList[0].id)
+        .end(function (err, response) {
+          assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
+          assert.equal(response.status, 200);
+          assert(response.body.user);
+          eventModel.count().then(function (count) {
+            assert.equal(oldEventCount + 1, count);
+            done();
+          })
+          .catch(function (err){
+            console.log(err);
+            done();
+          });
+        });
+    })
+    .catch(function (err){
+      console.log(err);
+      done();
+    });
   });
 
   it('delete a broadcast', function (done) {
-    api.delete('/broadcasts').send({token: testuserList[0].token, id: broadcastList[0].id})
-      .end(function (err, response) {
-        assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
-        assert.equal(response.status, 200);
-        assert.equal(response.body.broadcast.deleted, true);
-        done();
-      });
+    var oldEventCount = 0;
+    eventModel.count().then(function (count) {
+      var oldEventCount = count;
+      api.delete('/broadcasts').send({token: testuserList[0].token, id: broadcastList[0].id})
+        .end(function (err, response) {
+          assert.equal(response.header['content-type'], 'application/json; charset=utf-8');
+          assert.equal(response.status, 200);
+          assert.equal(response.body.broadcast.deleted, true);
+          eventModel.count().then(function (count) {
+            assert.equal(oldEventCount + 1, count);
+            done();
+          });
+        });
+    })
+    .catch(function (err){
+      console.log(err);
+      done();
+    });
   });
 
   it('cannnot delete a broadcast that does not exist', function (done) {
