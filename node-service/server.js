@@ -27,6 +27,7 @@ module.exports.start = function (done) {
     switch(req.headers.origin){
       case 'http://whistlet.com':
       case 'https://whistlet.com':
+      case 'http://localhost:3002':
         res.setHeader('Access-Control-Allow-Origin', req.headers.origin);
         break;
       default:
